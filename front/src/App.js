@@ -24,6 +24,8 @@ function App() {
 */
 import React, { useEffect, useState} from 'react'
 import './App.css';
+import Recaptcha from './recaptcha'; // Assurez-vous que le chemin est correct
+
 
 function App(){
   const [backendData, setBackendData] = useState([{}])
@@ -61,7 +63,9 @@ function App(){
                     <input type='hidden'></input>  
 
                   <div class="form-group">
-                    <div class="g-recaptcha" data-sitekey="6Le0jrkZAAAAANa3Yq5XfzHC4h34e4K6ynXOhlHK"></div>
+                      <div class="g-recaptcha" data-sitekey="6Le0jrkZAAAAANa3Yq5XfzHC4h34e4K6ynXOhlHK">
+                        <Recaptcha/>
+                      </div>
                   </div>
                   <script type="text/javascript"src="https://www.google.com/recaptcha/api.js?hl=en"></script>
 
@@ -102,6 +106,7 @@ function App(){
 
           </div>
       </div>
+                                              
       <div class="footer p15">
           <div class="float-start">
            Copyright © 2024 VNB-IT | Powered by VNB-IT           
