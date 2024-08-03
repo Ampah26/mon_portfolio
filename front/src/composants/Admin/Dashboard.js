@@ -1,27 +1,272 @@
-import React from "react";
+import React , { useState,useEffect } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
-function Dashboard () {
+import 'feather-icons';
+import $ from 'jquery';
+
+const isMobile = () => window.innerWidth <= 768;
+const events = [
+    { id: '988ebe0de18bbe108d7f3cdb934bd5ee635a86d868ab44d2914c486f4614a4258206c7a778db072f14bb378dcd89f36cc2bc1c5692242bf02021cb8afad5792179ee3db45ed797c1eff2d7d7944f26d9ad9e3281aca936fc42ea7e', title: 'Company Anniversary Celebration', date: 'Today, 01:10:00 am – 02:30:00 am', color: '#83c340' },
+    { id: 'ff2ab4ac1bfeaf51664032e608e1db0bfa96ea1a22ef7d43c70e3ef0714dd13d800906ad29fdb8f7c1a8e108a513c8325bdf96a975ff371d0247b4f9717e2388555496572783a7214d65dd26a1625091fa1b187e5841482ef84b58', title: 'Industry Panel Discussion', date: 'Sun, July 28, 07:59:00 pm – 09:39:00 pm', color: '#2d9cdb' },
+    // Add other events here
+    
+];
+
+const projects = [
+    { id: '23', title: 'Online Course Creation and Launch', progress: 0 },
+    { id: '13', title: 'Social Media Influencer Collaboration', progress: 0 },
+    { id: '28', title: 'Virtual Reality Experience Design', progress: 20 },
+    { id: '14', title: 'Market Research and Analysis', progress: 27 },
+    { id: '5', title: 'Content Writing and Blogging', progress: 29 },
+    { id: '20', title: 'Custom Illustrations and Artwork', progress: 29 },
+    { id: '18', title: 'Logo Redesign and Modernization', progress: 75 },
+    // Add other projects here
+];
+
+
+
+const Dashboard = () => {
+  /*  useEffect(() => {
+        console.log($.fn.jquery); // Vérifiez la version de jQuery
+        $('[data-toggle="tooltip"]').tooltip();
+      }, []);
+ 
+    //1
+    $(document).click(function (e) {
+        if (!$(e.target).is('#navbar') && isMobile()) {
+            $('#navbar').collapse('hide');
+        }
+    });
+
+    var notificationOptions = {};
+
+    $(document).ready(function () {
+        //load message notifications
+        var messageOptions = {},
+                messageIcon = "#message-notification-icon",
+                notificationIcon = "#web-notification-icon";
+
+        //check message notifications
+        messageOptions.notificationUrl = "https://rise.fairsketch.com/messages/count_notifications";
+        messageOptions.notificationStatusUpdateUrl = "https://rise.fairsketch.com/messages/update_notification_checking_status";
+        messageOptions.checkNotificationAfterEvery = "60";
+        messageOptions.icon = "mail";
+        messageOptions.notificationSelector = $(messageIcon);
+        messageOptions.isMessageNotification = true;
+
+
+       
+
+        $('body').on('show.bs.dropdown', messageIcon, function () {
+            messageOptions.notificationUrl = "https://rise.fairsketch.com/messages/get_notifications";
+        });
+
+
+
+
+        //check web notifications
+        notificationOptions.notificationUrl = "https://rise.fairsketch.com/notifications/count_notifications";
+        notificationOptions.notificationStatusUpdateUrl = "https://rise.fairsketch.com/notifications/update_notification_checking_status";
+        notificationOptions.checkNotificationAfterEvery = "60";
+        notificationOptions.icon = "bell";
+        notificationOptions.notificationSelector = $(notificationIcon);
+        notificationOptions.notificationType = "web";
+        notificationOptions.pushNotification = "";
+
+
+        if (isMobile()) {
+            //for mobile devices, load the notifications list with the page load
+            notificationOptions.notificationUrlForMobile = "https://rise.fairsketch.com/notifications/get_notifications";
+        }
+
+        $('body').on('show.bs.dropdown', notificationIcon, function () {
+            notificationOptions.notificationUrl = "https://rise.fairsketch.com/notifications/get_notifications";
+        });
+
+        $('body').on('click', "#reminder-icon", function () {
+            $("#ajaxModal").addClass("reminder-modal");
+        });
+
+       
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+
+    //2
  
 
+    
+    $(document).ready(function () {
+        //modify design for mobile devices
+        if (isMobile()) {
+            var $dashboardTags = $("#dashboards-color-tags"),
+                    $dashboardTagsClone = $dashboardTags.clone(),
+                    $dashboardDropdown = $(".dashboard-dropdown .dropdown-menu");
+
+            $dashboardTags.addClass("hide");
+            $dashboardTagsClone.removeClass("float-end");
+            $dashboardTagsClone.children("span").addClass("p5 text-center inline-block");
+
+            $dashboardTagsClone.children("span").find("a").each(function () {
+                $(this).children("span").removeClass("p10").addClass("p5");
+            });
+
+            var liDom = "<li id='color-tags-container-for-mobile' class='bg-off-white text-center'></li>"
+            $dashboardDropdown.prepend(liDom);
+            $("#color-tags-container-for-mobile").html($dashboardTagsClone);
+        }
+    });
+
+
+    //4
+    
+
+    //adjust height of widgets container
+    function adjustHeightOfWidgetContainer() {
+        if ($('.js-widget-container').height() > $(window).height() - 175) {
+            $('.js-widget-container').height($(window).height() - 170).addClass("overflow-y-scroll");
+        }
+    }
+
+    //prepare the columns according to column size
+    function addNewColumn(columnValue) {
+        var newColumnDiv = "",
+                columns = columnValue.split("-");
+
+        $("#widget-column-container").append("<row class='widget-row clearfix d-flex bg-white' data-column-ratio='" + columnValue + "'><div class='float-start row-controller text-off font-16'><span class='move'><i data-feather='menu' class='icon-16'></i></span><span class='delete delete-widget-row'><i data-feather='x' class='icon-16'></i></span></div><div class='float-start clearfix row-container row pr15 pl15'>" + newColumnDiv + "</div></row>");
+
+        //new row added. hide the collapse panel
+        $("#add-column-button").trigger("click");
+        
+
+        setTimeout(function () {
+            initSortable();
+        }, 500);
+
+    }
+
+    //initialize sortable
+    function initSortable() {
+
+        var options = {
+            animation: 150,
+            chosenClass: "sortable-chosen",
+            ghostClass: "sortable-ghost",
+            filter: ".empty-area-text",
+            cancel: ".empty-area-text",
+            onAdd: function (e) {
+                //moved to the new column/row. save the widget position
+                saveWidgetPosition();
+
+                removeEmptyAreaText(e.to);
+                addEmptyAreaText(e.to);
+                addEmptyAreaText(e.from);
+            },
+            onUpdate: function (e) {
+                //moved to the same column/row. save the widget position
+                saveWidgetPosition();
+
+                removeEmptyAreaText(e.to);
+                addEmptyAreaText(e.to);
+                addEmptyAreaText(e.from);
+            }
+        };
+
+    }
+
+    //remove drag/drop text from new added area if there is no elements available
+    function removeEmptyAreaText(index) {
+        if ($(index).has("div").length > 0 && $(index).attr("id") !== "widget-column-container") {
+            $(index).find("span.empty-area-text").remove();
+        }
+    }
+
+    //add drag/drop text from removed area if there is no elements available
+    function addEmptyAreaText(index) {
+        if ($(index).has("div").length < 1) {
+            if ($(index).hasClass("js-widget-container")) {
+                //if it's widgets container area
+                $(index).html("<span class='text-off empty-area-text'>No more widgets available</span>");
+            } else {
+                //if it's widgets row area
+                $(index).html("<span class='text-off empty-area-text'>Drag and drop widgets here</span>");
+            }
+        }
+    }
+
+    //save the widget's position
+    function saveWidgetPosition() {
+        var rows = [];
+
+        $(".widget-row").each(function (index) {
+            var columns = [],
+                    $widgetColumn = $(this).find(".widget-column"),
+                    columnRatio = $(this).attr("data-column-ratio");
+
+            if ($widgetColumn) {
+                $widgetColumn.each(function (index) {
+                    var widget = $(this).find(".widget").attr("data-value");
+
+                    if (widget) {
+                        var widgets = [];
+                        $(this).find(".widget").each(function (index) {
+                            var widgetValue = $(this).attr("data-value");
+
+                            if (widgetValue) {
+                                widgets.push({widget: widgetValue, title: $(this).find(".float-start").text()});
+                            }
+                        });
+
+                        columns.push(widgets);
+                    }
+                });
+            }
+
+            if (columns.length) {
+                rows.push({columns: columns, ratio: columnRatio});
+            }
+        });
+
+        //convert array to json data and save into an input field
+        $("#widgets-data").val(JSON.stringify(rows));
+    }
+
+    //5
+
+    
+    $(document).ready(function () {
+        //we have to reload the same page when editting title
+        $("#dashboard-edit-title-button").click(function () {
+            window.dashboardTitleEditMode = true;
+        });
+
+        //update dashboard link
+        $(".dashboard-menu, .dashboard-image").closest("a").attr("href", window.location.href);
+
+       
+    
+
+
+    });
+*/
+    //6
+
+   
     return (
         <div>
-            <Navbar/>
-
-            <div id="left-menu-toggle-mask" style={{ height: '723px', position: 'relative', overflowY: 'scroll' }}>
-
-                <Sidebar />
-
-                <div class="page-container">
-                    <div class="main-scrollable-page">
-                        <div id="page-content" class="page-wrapper clearfix dashboard-view" style={{ minHeight: '474px'}}>
+            <Navbar />
+            <div id="left-menu-toggle-mask">
+                <Sidebar/>
+                <div class="page-container overflow-auto">
+                    <div class="main-scrollable-page scrollable-page" style={{height: "631px", position: "relative", overflowY: "scroll"}}>
+                        <div id="page-content" class="page-wrapper clearfix dashboard-view" style={{minHeight: "581px"}}>
                             <div class="clearfix mb15 dashbaord-header-area">
                                 <div class="clearfix float-start">
-                                   <span class="float-start p10 pl0">
-                                        <span style={{backgroundColor: '#4a8af4'}} class="color-tag border-circle"></span>
+                                    <span class="float-start p10 pl0">
+                                        <span style={{backgroundColor: "#fff"}} class="color-tag border-circle"></span>
                                     </span>
-                                    <h4 class="float-start">Tasks</h4>
-                                </div>
+                                    <h4 class="float-start">Dashboard</h4>
+                                </div>        
+
                                 <div class="float-end clearfix">
                                     <span class="float-end dropdown dashboard-dropdown ml10">
                                         <div class="dropdown-toggle clickable" data-bs-toggle="dropdown" aria-expanded="true">
@@ -30,1016 +275,1266 @@ function Dashboard () {
                                                 <circle cx="19" cy="12" r="1"></circle>
                                                 <circle cx="5" cy="12" r="1"></circle>
                                             </svg>
-
                                         </div>
                                         <ul class="dropdown-menu dropdown-menu-end mt-1" role="menu">
-                                            <li role="presentation" class="hidden-xs">
-                                                <a href="https://rise.fairsketch.com/dashboard/edit_dashboard/1" title="Edit dashboard" class="dropdown-item">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-columns icon-16">
-                                                        <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18">
-                                                        </path>
+                                            <li role="presentation">
+                                                <a  title="Add new dashboard" class="dropdown-item" data-act="ajax-modal" data-title="Add new dashboard" data-action-url="https://rise.fairsketch.com/dashboard/modal_form">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle icon-16">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                                                        <line x1="8" y1="12" x2="16" y2="12"></line>
                                                     </svg> 
-                                                    Edit dashboard
+                                                    Add new dashboard
                                                 </a> 
                                             </li>
-                                            <li role="presentation">
-                                                <a href="#" title="Edit title" id="dashboard-edit-title-button" class="dropdown-item" data-act="ajax-modal" data-title="Edit title" data-action-url="https://rise.fairsketch.com/dashboard/modal_form/1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit icon-16">
-                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                                                        </path>
-                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
-                                                        </path>
-                                                    </svg>
-                                                     Edit title
-                                                </a>
-                                             </li>
-                                             <li role="presentation">
-                                                    <a href="#" class="delete dropdown-item" data-post-id="1" data-reload-on-success="1" data-bs-toggle="tooltip" data-placement="left" data-act="ajax-request" data-action-url="https://rise.fairsketch.com/dashboard/mark_as_default">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor icon-16">
-                                                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2">
-                                                            </rect>
-                                                            <line x1="8" y1="21" x2="16" y2="21">
-                                                            </line><line x1="12" y1="17" x2="12" y2="21">
-                                                            </line>
-                                                        </svg> 
-                                                        Mark as default
-                                                    </a>
-                                            </li>
-                                            <li role="presentation">
-                                                <a href="#" title="Delete" class="delete dropdown-item" data-id="1" data-action-url="https://rise.fairsketch.com/dashboard/delete" data-action="delete-confirmation" data-success-callback="onDashboardDeleteSuccess">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x icon-16">
-                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                    </svg> Delete
-                                                </a> 
-                                            </li>
-
-
                                         </ul>
                                     </span>
+
                                     <span class="float-end" id="dashboards-color-tags">
-                                        <a href="">
-                                            <span class="clickable p10 mr5 inline-block">
-                                                <span style={{backgroundColor: '#fff'}} class="color-tag " title="Default dashboard">
-                                                </span>
+                                        <a href="https://rise.fairsketch.com/dashboard/index/1">
+                                            <span className="clickable p10 mr5 inline-block">
+                                                <span style={{ backgroundColor: '#fff' }} class="color-tag border-circle" title="Default dashboard"></span>
                                             </span>
                                         </a>
-                                        <a href="">
+                                        <a href="https://rise.fairsketch.com/dashboard/view/2">
                                             <span class="clickable p10 mr5 inline-block">
-                                                <span style={{backgroundColor: '#4a8af4'}} class="color-tag border-circle" title="Tasks">
-                                                </span>
+                                                <span style={{ backgroundColor: '#d43480' }} class="color-tag" title="test"></span>
                                             </span>
-                                        </a>   
+                                        </a>
+                                        <a href="https://rise.fairsketch.com/dashboard/view/1">
+                                            <span className="clickable p10 mr5 inline-block">
+                                                <span style={{ backgroundColor: '#4a8af4' }} className="color-tag" title="Tasks"></span>
+                                            </span>
+                                        </a>
                                     </span>
+
                                 </div>
                             </div>
                             <div class="clearfix row">
-                                <div class="col-md-12 widget-container">
+                                <div class="col-md-12 widget-container"></div>
+                            </div>
+                            <div class="dashboards-row clearfix row">
+                                <div class="widget-container col-md-3">
+                                    <div id="js-clock-in-out" class="card dashboard-icon-widget clock-in-out-card">
+                                        <div class="card-body">
+                                            <div class="widget-icon  bg-info ">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock icon">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                                </svg>
+                                            </div>
+
+                                            <div class="widget-details">
+                                                <a 
+                                                     
+                                                    class="btn btn-default text-primary" 
+                                                    title="Clock Out" 
+                                                    id="timecard-clock-out" 
+                                                    data-post-id="255" 
+                                                    data-post-clock_out="1" 
+                                                    data-act="ajax-modal" 
+                                                    data-title="Clock Out" 
+                                                    data-action-url="https://rise.fairsketch.com/attendance/note_modal_form"
+                                                >
+                                                    <svg 
+                                                    xmlns="http://www.w3.org/2000/svg" 
+                                                    width="24" 
+                                                    height="24" 
+                                                    viewBox="0 0 24 24" 
+                                                    fill="none" 
+                                                    stroke="currentColor" 
+                                                    strokeWidth="2" 
+                                                    strokeLinecap="round" 
+                                                    strokeLinejoin="round" 
+                                                    class="feather feather-log-out icon-16"
+                                                    >
+                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                                    </svg>
+                                                    Clock Out
+                                                </a>
+                                                <div class="mt5 bg-transparent-white" title="29-07-2024 10:00:20 am">
+                                                    Clock started at : 10:00:20 am
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-container col-md-3">
+                                    <a href="https://rise.fairsketch.com/tasks/all_tasks#my_open_tasks" class="white-link">
+                                        <div class="card dashboard-icon-widget">
+                                            <div class="card-body">
+                                                <div class="widget-icon bg-info">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list icon">
+                                                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                                                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                                                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                                                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                                    </svg>
+                                                </div>
+                                                <div class="widget-details">
+                                                    <h1>47</h1>
+                                                    <span class="bg-transparent-white">My open tasks</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="widget-container col-md-3">
+                                    <a href="https://rise.fairsketch.com/events" class="white-link">
+                                        <div class="card dashboard-icon-widget">
+                                            <div class="card-body">
+                                                <div class="widget-icon bg-success">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                </div>
+                                                <div class="widget-details">
+                                                    <h1>1</h1>
+                                                    <span class="bg-transparent-white">Events today</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="widget-container col-md-3">
+                                    <a href="" class="white-link">
+                                        <div class="card  dashboard-icon-widget">
+                                            <div class="card-body ">
+                                                <div class="widget-icon bg-coral">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-compass icon"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                                                </div>
+                                                <div class="widget-details">
+                                                    <h1>$15,101.00</h1>
+                                                    <span class="bg-transparent-white">Due</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
                             <div class="dashboards-row clearfix row">
-                                <div class="widget-container col-md-12">
-                                    <div class="clearfix">
-                                        <div class="bg-white pb0 rounded-top" id="js-kanban-filter-container">
-                                            <div id="kanban-filters">
-                                                <div class="filter-section-container">
-                                                    <div class="filter-section-flex-row">
-                                                        <div class="filter-section-left">
-                                                            <div class="filter-item-box">
-                                                                <button class="btn btn-default" id="reload-kanban-button">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw icon-16">
-                                                                        <polyline points="23 4 23 10 17 10"></polyline>
-                                                                        <polyline points="1 20 1 14 7 14"></polyline>
-                                                                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15">
-                                                                        </path>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                            <div class="filter-item-box">
-                                                                <div class="dropdown smart-filter-dropdown-container">
-                                                                    <button class="btn btn-default smart-filter-dropdown dropdown-toggle caret" type="button" data-bs-toggle="dropdown" aria-expanded="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter icon-16 mr5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>Filters
-                                                                    </button>
-                                                                    <div class="dropdown-menu w300">
-                                                                        <div class="pb10 pl10">
-                                                                            <a class="inline-block btn btn-default manage-filters-button" data-act="ajax-modal" data-title="Manage Filters" data-post-context="all_tasks_kanban" data-post-instance_id="kanban-filters" type="button" data-action-url="https://rise.fairsketch.com/index.php/filters/manage_modal/all_tasks_kanban">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool icon-16 mr5">
-                                                                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
-                                                                                    </path>
-                                                                                </svg>Manage Filters 
-                                                                            </a>
-                                                                            <a class="inline-block btn btn-default clear-filter-button ml10 hide" href="#">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-delete icon-16 mr5">
-                                                                                    <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
-                                                                                    <line x1="18" y1="9" x2="12" y2="15"></line>
-                                                                                    <line x1="12" y1="9" x2="18" y2="15"></line>
-                                                                                </svg>Clear
-                                                                            </a>
-                                                                        </div>
-                                                                        <input type="text" class="form-control search-filter" placeholder="Search"/>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <ul class="list-group smart-filter-list-group">
-                                                                            <li><a href="#" class="dropdown-item smart-filter-item list-group-item clickable  " data-id="wxgvizqpbd">All tasks</a>
-                                                                            </li>
-                                                                            <li><a href="#" class="dropdown-item smart-filter-item list-group-item clickable  " data-id="uyprvjoabx">Bug</a>
-                                                                            </li><li><a href="#" class="dropdown-item smart-filter-item list-group-item clickable  " data-id="ysunozjtnm">Critical</a>
-                                                                            </li><li><a href="#" class="dropdown-item smart-filter-item list-group-item clickable  " data-id="ckictkmymt">Major</a>
-                                                                            </li><li><a href="#" class="dropdown-item smart-filter-item list-group-item clickable  " data-id="tlnpmbosnh">My tasks</a>
-                                                                            </li><li><a href="#" class="dropdown-item smart-filter-item list-group-item clickable  " data-id="bhcvpxosnw">Recently updated</a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid icon-16">
+                                                <rect x="3" y="3" width="7" height="7"></rect>
+                                                <rect x="14" y="3" width="7" height="7"></rect>
+                                                <rect x="14" y="14" width="7" height="7"></rect>
+                                                <rect x="3" y="14" width="7" height="7"></rect>
+                                            </svg> &nbsp;Projects Overview  
+                                        </div>
+                                        <div class="rounded-bottom pt-2">
+                                            <div class="box">
+                                                <div class="box-content">
+                                                    <a href="https://rise.fairsketch.com/projects/all_projects/1" class="text-default">
+                                                        <div class="pt-3 pb10 text-center">
+                                                            <div class="b-r">
+                                                                <h4 class="strong mb-1 mt-0" style={{color: "#01B393"}}>24</h4>
+                                                                <span>Open</span>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="filter-form hide">
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen1">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">   
-                                                                    <span class="select2-chosen" id="select2-chosen-2">- Quick filters -</span>
-                                                                    <abbr class="select2-search-choice-close"></abbr>   
-                                                                    <span class="select2-arrow" role="presentation"><b role="presentation"></b>
-                                                                    </span></a><label for="s2id_autogen2" class="select2-offscreen"></label>
-                                                            <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-2" id="s2id_autogen2"/>
-                                                            <div class="select2-drop select2-display-none select2-with-searchbox">   
-                                                                <div class="select2-search">       
-                                                                    <label for="s2id_autogen2_search" class="select2-offscreen"></label>       
-                                                                    <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-2" id="s2id_autogen2_search" placeholder=""/>   
-                                                                </div>   
-                                                                <ul class="select2-results" role="listbox" id="select2-results-2">   </ul>
-                                                            </div></div><input class="w200" name="quick_filter" tabindex="-1" title="" style={{display: 'none'}}/>
-                                                        </div>
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen3">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">   
-                                                                    <span class="select2-chosen" id="select2-chosen-4">- Related to -</span>
-                                                                    <abbr class="select2-search-choice-close"></abbr>  
-                                                                     <span class="select2-arrow" role="presentation"><b role="presentation"></b>
-                                                                     </span>
-                                                                </a>
-                                                                <label for="s2id_autogen4" class="select2-offscreen"></label>
-                                                                <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-4" id="s2id_autogen4"/>
-                                                                <div class="select2-drop select2-display-none select2-with-searchbox">  
-                                                                    <div class="select2-search">   
-                                                                        <label for="s2id_autogen4_search" class="select2-offscreen"></label>  
-                                                                        <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-4" id="s2id_autogen4_search" placeholder=""/> 
-                                                                    </div>   
-                                                                    <ul class="select2-results" role="listbox" id="select2-results-4">  
-                                                                    </ul>
-                                                                    </div>
-                                                                </div>
-                                                                <select class="w200" name="context" tabindex="-1" title="" style={{display: 'none'}}>
-                                                                    <option value="">- Related to -</option>
-                                                                    <option value="project">Project</option>
-                                                                    <option value="client">Client</option>
-                                                                    <option value="contract">Contract</option>
-                                                                    <option value="estimate">Estimate</option>
-                                                                    <option value="expense">Expense</option>
-                                                                    <option value="invoice">Invoice</option>
-                                                                    <option value="lead">Lead</option>
-                                                                    <option value="order">Order</option>
-                                                                    <option value="proposal">Proposal</option>
-                                                                    <option value="subscription">Subscription</option>
-                                                                    <option value="ticket">Ticket</option>
-                                                                </select>
-                                                        </div>
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen5">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">   
-                                                                    <span class="select2-chosen" id="select2-chosen-6">- Project -
-                                                                    </span><abbr class="select2-search-choice-close"></abbr>   
-                                                                    <span class="select2-arrow" role="presentation"><b role="presentation"></b>
-                                                                    </span>
-                                                                </a>
-                                                                <label for="s2id_autogen6" class="select2-offscreen"></label>
-                                                                <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-6" id="s2id_autogen6">
-                                                                </input>
-                                                                <div class="select2-drop select2-display-none select2-with-searchbox">
-                                                                    <div class="select2-search">   
-                                                                        <label for="s2id_autogen6_search" class="select2-offscreen"></label>  
-                                                                        <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-6" id="s2id_autogen6_search" placeholder=""/>
-                                                                   </div>
-                                                                   <ul class="select2-results" role="listbox" id="select2-results-6">   
-                                                                   </ul>
-                                                                </div>
+                                                    </a>
+                                                </div>
+                                                <div class="box-content">
+                                                    <a href="https://rise.fairsketch.com/projects/all_projects/2" class="text-default">
+                                                        <div class="pt-3 pb10 text-center">
+                                                            <div class="b-r">
+                                                                <h4 class="strong mb-1 mt-0 text-danger">7</h4>
+                                                                <span>Completed</span>
                                                             </div>
-                                                            <select class="w200" name="project_id" tabindex="-1" title="" style={{display: 'none'}}>
-                                                                <option value="">- Project -</option>
-                                                                <option value="1">Mobile App Development</option>
-                                                                <option value="2">E-commerce Website Design</option>
-                                                                <option value="4">Brand Identity Creation</option>
-                                                                <option value="5">Content Writing and Blogging</option>
-                                                                <option value="7">SEO Optimization Strategy</option>
-                                                                <option value="8">UI/UX Design for Web App</option>
-                                                                <option value="9">Graphic Design for Print Materials</option>
-                                                                <option value="12">Product Photography and Cataloging</option>
-                                                                <option value="13">Social Media Influencer Collaboration</option>
-                                                                <option value="14">Market Research and Analysis</option>
-                                                                <option value="15">Email Marketing Campaign</option>
-                                                                <option value="16">Motion Graphics and Explainer Videos</option>
-                                                                <option value="17">WordPress Plugin Development</option>
-                                                                <option value="18">Logo Redesign and Modernization</option>
-                                                                <option value="19">Website Maintenance and Updates</option>
-                                                                <option value="20">Custom Illustrations and Artwork</option>
-                                                                <option value="21">Mobile Game Development</option>
-                                                                <option value="22">Copywriting for Advertisements</option>
-                                                                <option value="23">Online Course Creation and Launch</option>
-                                                                <option value="24">Product Packaging Design</option>
-                                                                <option value="25">Data Analysis and Insights</option>
-                                                                <option value="28">Virtual Reality Experience Design</option>
-                                                                <option value="30">Business Card and Stationery Design</option>
-                                                                <option value="31">test</option>
-                                                            </select>
                                                         </div>
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen7">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">  
-                                                                     <span class="select2-chosen" id="select2-chosen-8">- Milestone -
-                                                                    </span>
-                                                                    <abbr class="select2-search-choice-close"></abbr> 
-                                                                    <span class="select2-arrow" role="presentation">
-                                                                        <b role="presentation"></b>
-                                                                    </span>
-                                                                </a>
-                                                                <label for="s2id_autogen8" class="select2-offscreen"></label>
-                                                                <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-8" id="s2id_autogen8">
-                                                                </input>
-                                                                <div class="select2-drop select2-display-none select2-with-searchbox"> 
-                                                                      <div class="select2-search">     
-                                                                          <label for="s2id_autogen8_search" class="select2-offscreen"></label>     
-                                                                          <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-8" id="s2id_autogen8_search" placeholder=""/>  
-                                                                     </div>
-                                                                     <ul class="select2-results" role="listbox" id="select2-results-8">  
-                                                                    </ul>
-                                                                </div>
+                                                    </a>
+                                                </div>
+                                                <div class="box-content">
+                                                    <a href="https://rise.fairsketch.com/projects/all_projects/3" class="text-default">
+                                                        <div class="pt-3 pb10 text-center">
+                                                            <div>
+                                                                <h4 class="strong mb-1 mt-0 text-warning">0</h4>
+                                                                <span>Hold</span>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
 
-                                                            </div>
-                                                            <select class="w200" name="milestone_id" tabindex="-1" title="" style={{display: 'none'}}>
-                                                                <option value="">- Milestone -</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen9">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">   
-                                                                    <span class="select2-chosen" id="select2-chosen-10">John Doe </span>
-                                                                    <abbr class="select2-search-choice-close"></abbr>   
-                                                                    <span class="select2-arrow" role="presentation">
-                                                                        <b role="presentation"></b>
-                                                                    </span>
-                                                                </a>
-                                                                <label for="s2id_autogen10" class="select2-offscreen"></label>
-                                                                <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-10" id="s2id_autogen10">
-                                                                </input>
-                                                                <div class="select2-drop select2-display-none select2-with-searchbox">  
-                                                                    <div class="select2-search">    
-                                                                        <label for="s2id_autogen10_search" class="select2-offscreen"></label>    
-                                                                       <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-10" id="s2id_autogen10_search" placeholder=""/>
-                                                                    </div> 
-                                                                    <ul class="select2-results" role="listbox" id="select2-results-10">  
-                                                                    </ul>
-                                                                </div>
-                                                            
-
-                                                            </div>
-                                                            <select class="w200" name="specific_user_id" tabindex="-1" title="" style={{display: 'none'}}>
-                                                                <option value="">- Team member -</option><option value="6">Ayan Francis </option>
-                                                                <option selected="" value="1">John Doe </option>
-                                                                <option value="5">Mark Thomas </option>
-                                                                <option value="2">Michael Wood </option>
-                                                                <option value="4">Richard Gray </option>
-                                                                <option value="3">Sara Ann </option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen11">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">   
-                                                                    <span class="select2-chosen" id="select2-chosen-12">- Priority -
-                                                                    </span>
-                                                                    <abbr class="select2-search-choice-close"></abbr>  
-                                                                    <span class="select2-arrow" role="presentation">
-                                                                        <b role="presentation"></b>
-                                                                    </span>
-                                                                </a>
-                                                                <label for="s2id_autogen12" class="select2-offscreen"></label>
-                                                                <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-12" id="s2id_autogen12">
-                                                                </input>
-                                                                <div class="select2-drop select2-display-none select2-with-searchbox">  
-                                                                    <div class="select2-search">      
-                                                                         <label for="s2id_autogen12_search" class="select2-offscreen"></label>    
-                                                                        <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-12" id="s2id_autogen12_search" placeholder=""/>
-                                                                    </div>  
-                                                                    <ul class="select2-results" role="listbox" id="select2-results-12"> 
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                            <select class="w200" name="priority_id" tabindex="-1" title="" style={{display: 'none'}}>
-                                                                <option value="">- Priority -</option><option value="1">Minor</option>
-                                                                <option value="2">Major</option>
-                                                                <option value="3">Critical </option>
-                                                                <option value="4">Blocker </option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="filter-item-box">
-                                                            <div class="select2-container w200" id="s2id_autogen13">
-                                                                <a href="javascript:void(0)" class="select2-choice" tabindex="-1">  
-                                                                     <span class="select2-chosen" id="select2-chosen-14">- Label -
-                                                                    </span>
-                                                                    <abbr class="select2-search-choice-close">
-                                                                    </abbr>  
-                                                                    <span class="select2-arrow" role="presentation">
-                                                                        <b role="presentation"></b>
-                                                                    </span>
-                                                                </a>
-                                                                <label for="s2id_autogen14" class="select2-offscreen">
-                                                                </label>
-                                                                <input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-14" id="s2id_autogen14"/>
-                                                                <div class="select2-drop select2-display-none select2-with-searchbox">  
-                                                                    <div class="select2-search">      
-                                                                        <label for="s2id_autogen14_search" class="select2-offscreen"></label> 
-                                                                        <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-14" id="s2id_autogen14_search" placeholder=""/>
-                                                                    </div>  
-                                                                    <ul class="select2-results" role="listbox" id="select2-results-14">  
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                            <select class="w200" name="label_id" tabindex="-1" title="" style={{display: 'none'}}>
-                                                                <option value="">- Label -</option>
-                                                                <option value="7">Feedback</option>
-                                                                <option value="6">Bug</option>
-                                                                <option value="5">Enhancement</option>
-                                                                <option value="4">Design</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="filter-item-box">
-                                                            <button name="deadline" class="btn w200 datepicker-custom-selector">- Deadline -
-                                                                <span class="ml10 dropdown-toggle"></span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="filter-item-box save-filter-box hide">
-                                                            <button class="btn btn-default save-filter-button" data-act="ajax-modal" data-title="" data-post-context="all_tasks_kanban" data-post-instance_id="kanban-filters" type="button" data-action-url="https://rise.fairsketch.com/index.php/filters/modal_form">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle icon-16">
-                                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                        <div class="filter-item-box filter-cancel-box">
-                                                            <button class="btn btn-default cancel-filter-button" type="button">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle icon-16">
-                                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                                                </svg>
-                                                            </button>
+                                            <div class="container project-overview-widget">
+                                                <div class="progress-outline">
+                                                    <div class="progress mt5 m-auto position-relative">
+                                                        <div class="progress-bar bg-orange text-default" role="progressbar" style={{width:"32%" ,ariaValuenow:"32" ,ariaValuemin:"0" ,ariaValuemax:"100"}}>
+                                                            <span class="justify-content-center d-flex position-absolute w-100">Progression 32%</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
-                                        <div id="load-kanban">
-                                            <div id="kanban-wrapper" style={{overflowX: 'scroll'}}>
-                                                <ul id="kanban-container" class="kanban-container clearfix" style={{width:" 1345px"}}>
-                                                    <li class="kanban-col kanban-1">
-                                                        <div class="kanban-col-title" style={{ borderBottom: '3px solid #F9A52D' }}> 
-                                                            To do
-                                                            <span class="kanban-item-count 1-task-count float-end">19 </span>
-                                                        </div>
-                                                        <div class="kanban-input general-form hide">
-                                                            <input type="text" name="title" value="" id="title" class="form-control" placeholder="Add a task..."/>
-                                                        </div>
-                                                        <div id="kanban-item-list-1" class="kanban-item-list js-load-more-on-scroll" data-status_id="1" style={{height: '237.375px', overflowY: 'scroll'}}>
-                                                            <a class="kanban-item d-block " data-status_id="1" title="Task info #3435">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                    3435. Measure influencer campaign success
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-
-                                                            </a>
-                                                            <a class="kanban-item d-block" data-status_id="1">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#aab7b7"}} aria-label="Priority: Minor">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down icon-14">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <polyline points="19 12 12 19 5 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">Enhancement
-                                                                    </span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a  class="kanban-item d-block  " data-status_id="1" data-id="3517" data-project_id="20" data-sort="7517" data-post-id="3517" title="Task info #3517" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3517" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>3517. Sketch and outline illustrations
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a  class="kanban-item d-block  " data-status_id="1" data-id="3432" data-project_id="13" data-sort="7849" data-post-id="3432" title="Task info #3432" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3432" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3432. Track influencer performance and reach
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a  class="kanban-item d-block  " data-status_id="1" data-id="3530" data-project_id="21" data-sort="10246" data-post-id="3530" title="Task info #3530" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3530" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3530. Design game characters and assets
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#d43480"}} title="Label">
-                                                                        Bug
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a  class="kanban-item d-block  " data-status_id="1" data-id="3381" data-project_id="9" data-sort="10746" data-post-id="3381" title="Task info #3381" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3381" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3381. Create promotional banners and ads
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3474" data-project_id="17" data-sort="12420" data-post-id="3474" title="Task info #3474" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3474" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3474. Define plugin functionality and scope
-                                                                <div class="clearfix">
-                                                                    <div class="mt10 font-12 float-start" title="Start date">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar icon-14 text-off mr5">
-                                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                                                                        </svg> 21-07-2024
-                                                                    </div>
-                                                                    <div class="mt10 font-12 float-end" title="Deadline">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar icon-14 text-off mr5">
-                                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                                                                        </svg> 
-                                                                        27-07-2024
-                                                                    </div>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#ad159e"}} aria-label="Priority: Critical ">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle icon-14">
-                                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3459" data-project_id="15" data-sort="12840" data-post-id="3459" title="Task info #3459" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3459" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3459. Schedule email campaign sends
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a  class="kanban-item d-block  " data-status_id="1" data-id="3482" data-project_id="17" data-sort="14860" data-post-id="3482" title="Task info #3482" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3482" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3482. Ensure plugin security and updates
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">
-                                                                        Enhancement
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3529" data-project_id="21" data-sort="15391" data-post-id="3529" title="Task info #3529" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3529" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3529. Create game concept and storyline
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">
-                                                                        Enhancement
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a  class="kanban-item d-block  " data-status_id="1" data-id="3427" data-project_id="13" data-sort="21333" data-post-id="3427" title="Task info #3427" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3427" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3427. Identify potential social media influencers
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3642" data-project_id="30" data-sort="29780" data-post-id="3642" title="Task info #3642" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3642" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3642. Add company logo and contact details
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3430" data-project_id="13" data-sort="29944" data-post-id="3430" title="Task info #3430" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3430" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3430. Send products or samples to influencers
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#83c340"}} title="Label">Design</span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3387" data-project_id="9" data-sort="30415" data-post-id="3387" title="Task info #3387" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3387" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3387. Optimize graphics for different media
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="1" data-id="3368" data-project_id="8" data-sort="30832" data-post-id="3368" title="Task info #3368" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3368" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3368. Optimize app navigation and flow
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#aab7b7"}} aria-label="Priority: Minor">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down icon-14">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <polyline points="19 12 12 19 5 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#83c340"}} title="Label">Design</span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                        </div>
-                                                    </li>
-                                                    <li class="kanban-col kanban-2">
-                                                        <div class="kanban-col-title" style={{borderBottom: "3px solid #1672B9"}}>
-                                                             In progress 
-                                                             <span class="kanban-item-count 2-task-count float-end">
-                                                                13 
-                                                            </span>
-                                                        </div>
-                                                        <div class="kanban-input general-form hide">
-                                                            <input type="text" name="title" value="" id="title" class="form-control" placeholder="Add a task..."/>
-                                                        </div>
-                                                        <div id="kanban-item-list-2" class="kanban-item-list" data-status_id="2" style={{height: "237.375px", overflowY: "scroll"}}>
-                                                            <a href="#" class="kanban-item d-block" data-status_id="2" data-id="3290" data-project_id="1" data-sort="277" data-post-id="3290" title="Task info #3290" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3290" data-action-url="https://rise.fairsketch.com/tasks/view" draggable="false">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png" draggable="false"/>
-                                                                </span>
-                                                                3290. Submit app to app stores for release
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#ad159e"}} aria-label="Priority: Critical ">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle icon-14">
-                                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#d43480"}} title="Label">Bug</span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3546" data-project_id="22" data-sort="865" data-post-id="3546" title="Task info #3546" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3546" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3546. A/B test ad variations
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3623" data-project_id="28" data-sort="5648" data-post-id="3623" title="Task info #3623" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3623" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3623. Use VR for training and simulations
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#83c340"}} title="Label">
-                                                                        Design
-                                                                    </span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3319" data-project_id="4" data-sort="10312" data-post-id="3319" title="Task info #3319" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3319" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3319. Design brand packaging and labels
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#d43480"}} title="Label">Bug</span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3525" data-project_id="20" data-sort="23230" data-post-id="3525" title="Task info #3525" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3525" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>3525. Create illustration assets for printing
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">Enhancement</span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3509" data-project_id="19" data-sort="28747" data-post-id="3509" title="Task info #3509" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3509" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar"><img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>3509. Test website functionality and links
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3313" data-project_id="4" data-sort="30898" data-post-id="3313" title="Task info #3313" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3313" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar"><img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/></span>
-                                                                3313. Conduct brand research and analysis
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">Enhancement</span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3570" data-project_id="24" data-sort="34432" data-post-id="3570" title="Task info #3570" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3570" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3570. Test packaging durability and usability
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3317" data-project_id="4" data-sort="36645" data-post-id="3317" title="Task info #3317" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3317" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3317. Design business cards and stationery
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a href="#" class="kanban-item d-block  " data-status_id="2" data-id="3496" data-project_id="18" data-sort="39209" data-post-id="3496" title="Task info #3496" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3496" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3496. Incorporate client feedback and revisions
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-
-                                                        </div>
-                                                    </li>
-                                                    <li class="kanban-col kanban-4">
-                                                        <div class="kanban-col-title" style={{borderBottom: "3px solid #ad159e"}}>
-                                                             Review 
-                                                             <span class="kanban-item-count 4-task-count float-end">14 </span>
-                                                        </div>
-                                                        <div class="kanban-input general-form hide">
-                                                            <input type="text" name="title" value="" id="title" class="form-control" placeholder="Add a task..."/>
-                                                        </div>
-                                                        <div id="kanban-item-list-4" class="kanban-item-list" data-status_id="4" style={{height: "237.375px", overflowY: "scroll"}}>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3336" data-project_id="5" data-sort="2624" data-post-id="3336" title="Task info #3336" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3336" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3336. Research and write industry reports and case studies
-                                                                <div class="clearfix"></div><div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3326" data-project_id="5" data-sort="3646" data-post-id="3326" title="Task info #3326" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3326" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3326. Write SEO-friendly blog articles
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#aab7b7"}} aria-label="Priority: Minor">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down icon-14">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <polyline points="19 12 12 19 5 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">
-                                                                    Enhancement
-                                                                    </span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3578" data-project_id="25" data-sort="4929" data-post-id="3578" title="Task info #3578" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3578" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3578. Create data dashboards and reports
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#ad159e"}} aria-label="Priority: Critical ">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle icon-14">
-                                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">
-                                                                    Enhancement
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3576" data-project_id="25" data-sort="10612" data-post-id="3576" title="Task info #3576" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3576" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3576. Perform data visualization and charts
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#ad159e"}} aria-label="Priority: Critical ">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle icon-14">
-                                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3314" data-project_id="4" data-sort="12059" data-post-id="3314" title="Task info #3314" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3314" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3314. Design brand logo and tagline
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#aab7b7"}} aria-label="Priority: Minor">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down icon-14">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <polyline points="19 12 12 19 5 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#83c340"}} title="Label">Design</span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3524" data-project_id="20" data-sort="18196" data-post-id="3524" title="Task info #3524" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3524" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3524. Implement illustrations on digital platforms
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3354" data-project_id="7" data-sort="22338" data-post-id="3354" title="Task info #3354" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3354" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3354. Optimize website meta tags and descriptions
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3438" data-project_id="14" data-sort="25429" data-post-id="3438" title="Task info #3438" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3438" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3438. Define research objectives and goals
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#ad159e"}} aria-label="Priority: Critical ">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle icon-14">
-                                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                                            <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#d43480"}} title="Label">
-                                                                    Bug
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3443" data-project_id="14" data-sort="26875" data-post-id="3443" title="Task info #3443" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3443" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3443. Analyze competitor products and pricing
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#4a8af4"}} title="Label">
-                                                                    Enhancement
-                                                                    </span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3352" data-project_id="7" data-sort="28091" data-post-id="3352" title="Task info #3352" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3352" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3352. Conduct SEO audit and analysis
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#aab7b7"}} aria-label="Priority: Minor">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down icon-14">
-                                                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                            <polyline points="19 12 12 19 5 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3617" data-project_id="28" data-sort="29711" data-post-id="3617" title="Task info #3617" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3617" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3617. Optimize VR performance and frame rate
-                                                                <div class="clearfix"></div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3369" data-project_id="8" data-sort="30762" data-post-id="3369" title="Task info #3369" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3369" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3369. Implement responsive design for mobile
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3579" data-project_id="25" data-sort="31387" data-post-id="3579" title="Task info #3579" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3579" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3579. Generate statistical analysis and insights
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#e18a00"}} aria-label="Priority: Major">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
-                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                                                                            <polyline points="5 12 12 5 19 12"></polyline>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="mt0 badge  " style={{backgroundColor:"#29c2c2"}} title="Label">Feedback</span> 
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>
-                                                            <a class="kanban-item d-block  " data-status_id="4" data-id="3481" data-project_id="17" data-sort="36423" data-post-id="3481" title="Task info #3481" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3481" data-action-url="https://rise.fairsketch.com/tasks/view">
-                                                                <span class="avatar">
-                                                                    <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png"/>
-                                                                </span>
-                                                                3481. Integrate plugin with database
-                                                                <div class="clearfix"></div>
-                                                                <div class="meta float-start mr5">
-                                                                    <span class="sub-task-icon priority-badge" data-bs-toggle="tooltip" style={{background: "#ad159e"}} aria-label="Priority: Critical ">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle icon-14">
-                                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                                                        </svg>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="clearfix"></div>
-                                                            </a>     
-                                                        </div>
-                                                    </li>
-                                                </ul>
-
+                                    </div>
+                                    <div class="card bg-white">
+                                        <div class="row">
+                                            <div class="col-md-5 col-5">
+                                                <div class="pl30 pt30">
+                                                    <div class="b-r">
+                                                        <h3 class="mt-0 mb-1 strong text-danger">0</h3>
+                                                        <div class="text-truncate">Reminder Today</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7 col-7">
+                                                <div class="pl0 mt5 p30">
+                                                    <div class="mt-0 mb-1 text-truncate">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell icon text-danger">
+                                                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                                        </svg> 
+                                                        <span class="ml5">Next reminder</span>
+                                                    </div>
+                                                    <div class="text-truncate">
+                                                        <span class="text-off">No reminder</span>               
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <a class="hide" id="recently_meaning_hidden" title="Recently meaning" data-act="ajax-modal" data-title="Recently meaning" data-action-url="https://rise.fairsketch.com/team_members/recently_meaning_modal_form">
-                                    </a>
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div id="invoice-overview-widget-container">
+                                        <div class="card bg-white">
+                                            <div class="card-header">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text icon-16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> &nbsp;Invoice Overview
+                                            </div>
+
+                                            <div class="card-body rounded-bottom" id="invoice-overview-container" style={{height: "327px", position: "relative", overflowY: "scroll"}}>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#overdue" data-filter="overdue" class="text-default">
+                                                    <div class="d-flex p-2">
+                                                        <div class="w40p text-truncate">
+                                                            <div style={{backgroundColor: "#F5325C"}} class="color-tag border-circle wh10"></div>
+                                                              Overdue      
+                                                        </div>
+                                                        <div class="w20p">
+                                                            <div class="progress widget-progress-bar" title="23%">
+                                                                <div class="progress-bar bg-danger" role="progressbar" style={{width: "23%"}} aria-valuenow="23%" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="w15p text-center">6</div>
+                                                        <div class="w25p text-end">$2,772.50</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#not_paid" data-filter="not_paid" class="text-default">
+                                                    <div class="d-flex p-2">
+                                                        <div class="w40p text-truncate">
+                                                            <div style={{backgroundColor: "#FAC108"}} class="color-tag border-circle wh10"></div>
+                                                            Not paid                   
+                                                        </div>
+                                                        <div class="w20p">
+                                                            <div class="progress widget-progress-bar" title="23%">
+                                                                <div class="progress-bar bg-orange" role="progressbar" style={{width: "23%"}} aria-valuenow="23%" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="w15p text-center">6</div>
+                                                        <div class="w25p text-end">$9,356.00</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#partially_paid" data-filter="partially_paid" class="text-default">
+                                                    <div class="d-flex p-2">
+                                                        <div class="w40p text-truncate">
+                                                            <div style={{backgroundColor: "#6690F4"}} class="color-tag border-circle wh10"></div>Partially paid                    </div>
+                                                        <div class="w20p">
+                                                            <div class="progress widget-progress-bar" title="35%">
+                                                                <div class="progress-bar" role="progressbar" style={{width: "35%", backgroundColor: "#6690F4"}} aria-valuenow="35%" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="w15p text-center">9</div>
+                                                        <div class="w25p text-end">$10,720.00</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#fully_paid" data-filter="fully_paid" class="text-default">
+                                                    <div class="d-flex p-2">
+                                                        <div class="w40p text-truncate">
+                                                            <div style={{backgroundColor: "#485BBD"}} class="color-tag border-circle wh10"></div>
+                                                            Fully paid                  
+                                                        </div>
+                                                        <div class="w20p">
+                                                            <div class="progress widget-progress-bar" title="42%">
+                                                                <div class="progress-bar" role="progressbar" style={{width: "42%", backgroundColor: "#485BBD"}} aria-valuenow="42%" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="w15p text-center">11</div>
+                                                        <div class="w25p text-end">$12,470.00</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#draft" data-filter="draft" class="text-default">
+                                                    <div class="d-flex p-2">
+                                                        <div class="w40p text-truncate">
+                                                            <div style={{backgroundColor: "#6C757D"}} class="color-tag border-circle wh10"></div>
+                                                            Draft                  
+                                                        </div>
+                                                        <div class="w20p">
+                                                            <div class="progress widget-progress-bar" title="4%">
+                                                                <div class="progress-bar bg-secondary" role="progressbar" style={{width: "4%"}} aria-valuenow="4" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="w15p text-center">1</div>
+                                                        <div class="w25p text-end">$120.00</div>
+                                                    </div>
+                                                </a>
+
+                                                <div class="widget-footer bottom-25 position-absolute w90p">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-5 col-5 ps-4">
+                                                                <div>Total invoiced</div>
+                                                                <div class="strong">$32,457.00</div>
+
+                                                                <div class="mt10">Due</div>
+                                                                <div class="strong ">$14,627.00</div>
+                                                            </div>
+                                                            <div class="col-md-7 col-7">
+                                                                <div>Last 12 months</div>
+                                                                <div class="invoice-line-chart-container">
+                                                                    <div class="chartjs-size-monitor">
+                                                                        <div class="chartjs-size-monitor-expand">
+                                                                            <div class=""></div>
+                                                                        </div><div class="chartjs-size-monitor-shrink">
+                                                                            <div class=""></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <canvas id="invoice-overview-chart" style={{width: "111px", height: "67px", display: "block" }}width="138" height="83"  class="chartjs-render-monitor"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white h373">
+                                        <div class="card-header clearfix">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-pie-chart icon-16">
+                                                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                                                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                                            </svg> &nbsp;Income vs Expenses
+                                        </div>
+                                        <div class="card-body rounded-bottom">
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <div class="chartjs-size-monitor">
+                                                        <div class="chartjs-size-monitor-expand">
+                                                            <div></div>
+                                                        </div>
+                                                        <div class="chartjs-size-monitor-shrink">
+                                                            <div class=""></div>
+                                                        </div>
+                                                    </div>
+                                                    <canvas id="income-expense-chart" style={{ width: '203px', height: '203px', display: 'block' }} width="253" height="253" class="chartjs-render-monitor"></canvas>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <div class="mb-2">This Year</div>
+                                                    <div class="mb-1">
+                                                        <div class="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#32A483' }}></div>
+                                                        <span class="strong">$17,830.00</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#E60050' }}></div>
+                                                        <span class="strong">$9,120.00</span>
+                                                    </div>
+                                                    <div class="mt-4 mb-2">Last Year</div>
+                                                    <div class="mb-1">
+                                                        <div class="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#32A483' }}></div>
+                                                        <span class="strong">$0.00</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#E60050' }}></div>
+                                                        <span class="strong">$0.00</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pt35 ps-3">
+                                                <div class="chartjs-size-monitor">
+                                                    <div class="chartjs-size-monitor-expand">
+                                                        <div></div>
+                                                    </div>
+                                                    <div class="chartjs-size-monitor-shrink">
+                                                        <div></div>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-2">This Year</div>
+                                                <canvas id="dashboard-income-vs-expenses-chart" style={{ width: '198px', height: '57px', marginLeft: '-10px', display: 'block' }} width="236" height="71" class="chartjs-render-monitor"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="dashboards-row clearfix row">
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg 
+                                                xmlns="http://www.w3.org/2000/svg" 
+                                                width="24" 
+                                                height="24" 
+                                                viewBox="0 0 24 24" 
+                                                fill="none" 
+                                                stroke="currentColor" 
+                                                strokeWidth="2" 
+                                                strokeLinecap="round" 
+                                                strokeLinejoin="round" 
+                                                className="feather feather-list icon-16"
+                                            >
+                                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                            </svg>
+                                            &nbsp;All Tasks Overview
+                                        </div>
+                                        <div className="card-body rounded-bottom" id="all_tasks_overview-widget" style={{ height: '327px', position: 'relative', overflowY: 'scroll' }}>
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <div className="chartjs-size-monitor">
+                                                        <div className="chartjs-size-monitor-expand">
+                                                        <div className=""></div>
+                                                        </div>
+                                                        <div className="chartjs-size-monitor-shrink">
+                                                        <div className=""></div>
+                                                        </div>
+                                                    </div>
+                                                    <canvas 
+                                                        id="all-tasks-overview-chart-all_tasks_overview" 
+                                                        style={{ width: '197px', height: '189px', display: 'block' }} 
+                                                        width="246" 
+                                                        height="236" 
+                                                        className="chartjs-render-monitor"
+                                                    ></canvas>
+                                                </div>
+                                                <div className="col-md-6 pl20 pt-4">
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/1/0/all_tasks_overview" className="text-default">
+                                                        <div className="pb-2">
+                                                            <div className="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#F9A52D' }}></div>
+                                                            To do
+                                                            <span className="strong float-end" style={{ color: '#F9A52D' }}>74</span>
+                                                        </div>
+                                                    </a>
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/2/0/all_tasks_overview" className="text-default">
+                                                        <div className="pb-2">
+                                                            <div className="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#1672B9' }}></div>
+                                                            In progress
+                                                            <span className="strong float-end" style={{ color: '#1672B9' }}>61</span>
+                                                        </div>
+                                                    </a>
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/4/0/all_tasks_overview" className="text-default">
+                                                        <div className="pb-2">
+                                                            <div className="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#ad159e' }}></div>
+                                                            Review
+                                                            <span className="strong float-end" style={{ color: '#ad159e' }}>69</span>
+                                                        </div>
+                                                    </a>
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/3/0/all_tasks_overview" className="text-default">
+                                                        <div className="pb-2">
+                                                            <div className="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#00B393' }}></div>
+                                                            Done
+                                                            <span className="strong float-end" style={{ color: '#00B393' }}>175</span>
+                                                        </div>
+                                                    </a>
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/0/all_tasks_overview/expired" className="text-default">
+                                                        <div className="pb-2">
+                                                            <div className="color-tag border-circle me-3 wh10" style={{ backgroundColor: '#f5325c' }}></div>
+                                                            Expired
+                                                            <span className="strong float-end" style={{ color: '#f5325c' }}>156</span>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div className="position-absolute" style={{ bottom: '15px' }}>
+                                                <span className="me-5">
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/4/all_tasks_overview" className="text-default">
+                                                        <span title="Blocker ">
+                                                            <svg 
+                                                            xmlns="http://www.w3.org/2000/svg" 
+                                                            width="24" 
+                                                            height="24" 
+                                                            viewBox="0 0 24 24" 
+                                                            fill="none" 
+                                                            stroke="currentColor" 
+                                                            strokeWidth="2" 
+                                                            strokeLinecap="round" 
+                                                            strokeLinejoin="round" 
+                                                            className="feather feather-alert-octagon icon-18 me-1" 
+                                                            style={{ color: '#e74c3c' }}>
+                                                                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                                            </svg>
+                                                            18
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                                <span className="me-5">
+                                                    <a className="text-default">
+                                                        <span title="Critical ">
+                                                            <svg 
+                                                                xmlns="http://www.w3.org/2000/svg" 
+                                                                width="24" 
+                                                                height="24" 
+                                                                viewBox="0 0 24 24" 
+                                                                fill="none" 
+                                                                stroke="currentColor" 
+                                                                strokeWidth="2" 
+                                                                strokeLinecap="round" 
+                                                                strokeLinejoin="round" 
+                                                                className="feather feather-alert-circle icon-18 me-1" 
+                                                                style={{ color: '#ad159e' }}
+                                                            >
+                                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                                            </svg>
+                                                            28
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                                <span className="me-5">
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/2/all_tasks_overview" className="text-default">
+                                                        <span title="Major">
+                                                            <svg 
+                                                                xmlns="http://www.w3.org/2000/svg" 
+                                                                width="24" 
+                                                                height="24" 
+                                                                viewBox="0 0 24 24" 
+                                                                fill="none" 
+                                                                stroke="currentColor" 
+                                                                strokeWidth="2" 
+                                                                strokeLinecap="round" 
+                                                                strokeLinejoin="round" 
+                                                                className="feather feather-arrow-up icon-18 me-1" 
+                                                                style={{ color: '#e18a00' }}
+                                                            >
+                                                                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                                                                    <polyline points="5 12 12 5 19 12"></polyline>
+                                                            </svg>
+                                                            41
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                                <span className="me-5">
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/1/all_tasks_overview" className="text-default">
+                                                        <span title="Minor">
+                                                            <svg 
+                                                                xmlns="http://www.w3.org/2000/svg" 
+                                                                width="24" 
+                                                                height="24" 
+                                                                viewBox="0 0 24 24" 
+                                                                fill="none" 
+                                                                stroke="currentColor" 
+                                                                strokeWidth="2" 
+                                                                strokeLinecap="round" 
+                                                                strokeLinejoin="round" 
+                                                                className="feather feather-arrow-down icon-18 me-1" 
+                                                                style={{ color: '#aab7b7' }}
+                                                            >
+                                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                                    <polyline points="19 12 12 19 5 12"></polyline>
+                                                            </svg>
+                                                            27
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users icon-16">
+                                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="9" cy="7" r="4"></circle>
+                                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                            </svg> 
+                                            &nbsp;Team Members Overview    
+                                        </div>
+                                        <div class="rounded-bottom">
+                                            <div class="box pt-3">
+                                                <div class="box-content">
+                                                    <a class="text-default">
+                                                        <div class="pt-3 pb-3 text-center">
+                                                            <div class=" b-r">
+                                                                <h3 class="mt-0 strong mb5">5</h3>
+                                                                <div>Team members</div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="box-content">
+                                                    <a class="text-default">
+                                                        <div class="p-3 text-center">
+                                                            <h3 class="mt-0 strong mb5 text-warning">0</h3>
+                                                            <div>On leave today</div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="box pb-3">
+                                                <div class="box-content">
+                                                    <a class="text-default">
+                                                        <div class="pt-3 pb-3 text-center">
+                                                            <div class="b-r">
+                                                                <h3 class="mt-0 mb-1 strong text-danger">3</h3>
+                                                                <div class="progress h7 w-50 m-auto mb-1" title="60%">
+                                                                    <div class="progress-bar bg-danger" role="progressbar" style={{width: "60%"}} aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                                <div>Members Clocked In</div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="box-content">
+                                                    <a class="text-default">
+                                                        <div class="pt-3 pb-3 text-center">
+                                                            <h3 class="mt-0 mb-1 strong text-primary">2</h3>
+                                                            <div class="progress h7 w-50 m-auto mb-1" title="40%">
+                                                                <div class="progress-bar bg-primary" role="progressbar" style={{width: '40%'}} aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                            <div>Members Clocked Out</div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="text-default">
+                                        <div class="card dashboard-icon-widget">
+                                            <div class="card-body">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic icon">
+                                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                                </svg>
+                                                <span class="ml10">Last announcement</span>
+                                                <div class="mt15 ms-1 text-truncate" title="Tomorrow is holiday!">
+                                                    Tomorrow is holiday!        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-life-buoy icon-16">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <circle cx="12" cy="12" r="4"></circle>
+                                                <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
+                                                <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
+                                                <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
+                                                <line x1="14.83" y1="9.17" x2="18.36" y2="5.64"></line>
+                                                <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
+                                            </svg>
+                                            &nbsp;Ticket Status 
+                                        </div>
+                                        <div class="card-body rounded-bottom p20" id="ticket-status-widget" style={{height: "327px", position: "relative", overflowY: "scroll"}}>
+                                            <div class="row">
+                                                <div class="col-md-6 col b-r-2 ps-4 pe-4">
+                                                    <a href="https://rise.fairsketch.com/tickets/index/open" class="text-default ">
+                                                        <div class="pb-2">
+                                                            <div class="color-tag border-circle me-3 wh10" style={{backgroundColor: "#DEA701"}}></div>
+                                                            New             
+                                                           <span class="strong float-end">21</span>
+                                                        </div>
+                                                    </a>
+                                                    <a class="text-default ">
+                                                        <div class="pb-2">
+                                                            <div class="color-tag border-circle me-3 wh10" style={{backgroundColor: "#F4325B"}}></div>
+                                                            Open        
+                                                            <span class="strong float-end">15</span>
+                                                        </div>
+                                                    </a>
+                                                    <a class="text-default ">
+                                                        <div class="pb-2">
+                                                            <div class="color-tag border-circle me-3 wh10" style={{backgroundColor: "#485ABD"}}></div>
+                                                            Closed                     
+                                                           <span class="strong float-end">69</span>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-6 col ps-4 pe-4">
+                                                    <a class="text-default">
+                                                        <div class="pb-2 clearfix">
+                                                            <div class="float-start w-75 text-truncate">General Support</div>
+                                                            <span class="strong float-end text-danger">16</span>
+                                                        </div>
+                                                    </a>
+                                                    <a class="text-default">
+                                                        <div class="pb-2 clearfix">
+                                                            <div class="float-start w-75 text-truncate">Bug Reports</div>
+                                                            <span class="strong float-end text-danger">25</span>
+                                                        </div>
+                                                    </a>
+                                                    <a class="text-default">
+                                                        <div class="pb-2 clearfix">
+                                                            <div class="float-start w-75 text-truncate">Sales Inquiry</div>
+                                                            <span class="strong float-end text-danger">19</span>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
 
+                                            <div class="bottom-25 position-absolute w90p">
+                                                <div class="pb-3 ps-3">New tickets in last 30 days</div>
+                                                <div>
+                                                    <div class="chartjs-size-monitor">
+                                                        <div class="chartjs-size-monitor-expand">
+                                                            <div class=""></div>
+                                                        </div>
+                                                        <div class="chartjs-size-monitor-shrink">
+                                                            <div class=""></div>
+                                                        </div>
+                                                    </div>
+                                                    <canvas id="ticket-status-chart" style={{width: "204px", height: "100px", display: "block"}} width="255" height="125" class="chartjs-render-monitor"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboards-row clearfix row">
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-clock icon-16">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>&nbsp; Project Timeline
+                                        </div>
+
+                                        <div id="project-timeline-container" style={{ height: '719px', position: 'relative', overflowY: 'scroll' }}>
+                                            <div class="card-body">
+                                                <div class="d-flex border-bottom mb-3">
+                                                    <div class="flex-shrink-0 me-2 mt-3">
+                                                        <span class="avatar avatar-xs">
+                                                        <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png" alt="John Doe" />
+                                                        </span>
+                                                    </div>
+                                                    <div class="p-2 w-100">
+                                                        <div class="card-title">
+                                                        <a href="https://rise.fairsketch.com/team_members/view/1" class="dark strong">John Doe</a>
+                                                        <small><span class="text-off">Today at 08:39:14 pm</span></small>
+                                                        </div>
+                                                        <p>
+                                                            <span class="badge bg-warning">Updated</span>
+                                                            <span class="text-break">
+                                                                Task: 
+                                                                <a  title="Task info #3642" class="dark" id="task-modal-view-link" data-post-id="3642" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3642" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                #3642 - Add company logo and contact details
+                                                                </a>
+                                                            </span>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                Status:
+                                                                <del>To do</del> 
+                                                                <ins>Done</ins>
+                                                            </li>
+                                                        </ul>
+                                                        <p>
+                                                            Project: 
+                                                            <a href="https://rise.fairsketch.com/projects/view/30" class="dark">
+                                                                Business Card and Stationery Design
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex border-bottom mb-3">
+                                                    <div class="flex-shrink-0 me-2 mt-3">
+                                                        <span class="avatar avatar-xs">
+                                                        <img src="https://rise.fairsketch.com/files/profile_images/_file62ad955b55c00-avatar.png" alt="Emily Smith" />
+                                                        </span>
+                                                    </div>
+                                                    <div class="p-2 w-100">
+                                                        <div class="card-title">
+                                                        <a href="https://rise.fairsketch.com/clients/contact_profile/107" class="dark strong">Emily Smith</a>
+                                                        <small><span class="text-off">Today at 06:18:25 pm</span></small>
+                                                        </div>
+                                                        <p>
+                                                        <span class="badge bg-warning">Updated</span>
+                                                        <span class="text-break">Task: <a  title="Task info #3426" class="dark" id="task-modal-view-link" data-post-id="3426" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3426" data-action-url="https://rise.fairsketch.com/tasks/view"> #3426 - Add product reviews and ratings</a></span>
+                                                        </p>
+                                                        <ul>
+                                                        <li>Priority: Moved Down</li>
+                                                        <li>Status: <del>To do</del> <ins>In progress</ins></li>
+                                                        </ul>
+                                                        <p>Project: <a href="https://rise.fairsketch.com/projects/view/12" class="dark">Product Photography and Cataloging</a></p>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex border-bottom mb-3">
+                                                    <div class="flex-shrink-0 me-2 mt-3">
+                                                        <span class="avatar avatar-xs">
+                                                            <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png" alt="..."/>
+                                                        </span>
+                                                    </div>
+                                                    <div class="p-2 w-100">
+                                                        <div class="card-title">
+                                                            <a href="https://rise.fairsketch.com/team_members/view/1" class="dark strong">John Doe</a>    
+                                                            <small>
+                                                                <span class="text-off">Today at 10:00:51 am</span>
+                                                            </small>
+                                                        </div>
+                                                        <p>
+                                                            <span class="badge bg-warning">Updated</span>
+                                                            <span class="text-break">
+                                                                Task: 
+                                                                <a  title="Task info #3654" class="dark" id="task-modal-view-link" data-post-id="3654" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3654" data-action-url="https://rise.fairsketch.com/tasks/view"> 
+                                                                    #3654 - test w
+                                                                </a>
+                                                            </span>
+                                                        </p>
+                                                        <ul>
+                                                            <li>Priority: Moved Up</li>
+                                                            <li>
+                                                                Status: 
+                                                                <del>
+                                                                    To do
+                                                                </del>
+                                                                <ins>In progress</ins>
+                                                            </li>
+                                                        </ul>
+                                                        <p></p>                
+                                                        <p> 
+                                                            Project:
+                                                            <a href="https://rise.fairsketch.com/projects/view/31" class="dark">test 21</a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex border-bottom mb-3">
+                                                    <div class="flex-shrink-0 me-2 mt-3">
+                                                        <span class="avatar avatar-xs">
+                                                            <img src="https://rise.fairsketch.com/files/profile_images/_file62ad94f892365-avatar.png" alt="..."/>
+                                                        </span>
+                                                    </div>
+                                                    <div class="p-2 w-100">
+                                                        <div class="card-title">
+                                                            <a href="https://rise.fairsketch.com/team_members/view/1" class="dark strong">John Doe</a>                    <small><span class="text-off">Today at 09:56:14 am</span></small>
+                                                        </div>
+                                                        <p>
+                                                            <span class="badge bg-warning">Updated</span>
+                                                            <span class="text-break">
+                                                                Task: 
+                                                                <a  title="Task info #3655" class="dark" id="task-modal-view-link" data-post-id="3655" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3655" data-action-url="https://rise.fairsketch.com/tasks/view"> #3655 - sds</a>
+                                                            </span>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                Status: 
+                                                                <del>
+                                                                    To do
+                                                                </del>
+                                                                <ins>Done</ins>
+                                                            </li>
+                                                        </ul>           
+                                                        <p></p>
+                                                        <p> 
+                                                            Project:
+                                                            <a href="https://rise.fairsketch.com/projects/view/31" class="dark">test 21</a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Repeat similar blocks for other entries */}
+
+                                                <div id="loadproject10project0">
+                                                <div class="text-center">
+                                                    <a  class="btn btn-default w-100 mt15 spinning-btn" title="Load more" data-inline-loader="1" data-real-target="#loadproject10project0" data-act="ajax-request" data-action-url="https://rise.fairsketch.com/projects/history/10/project/0/0/0">Load more</a>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-calendar icon-16">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>&nbsp; Events
+                                        </div>
+                                        <div id="upcoming-event-container" style={{ height: '330px', position: 'relative', overflowY: 'scroll' }}>
+                                            <div class="card-body">
+                                                <div style={{ minHeight: '190px' }}>
+                                                    {events.map(event => (
+                                                        <div key={event.id} class="pb10 pt10 b-b">
+                                                            <div>
+                                                                <a  data-post-id={event.id} data-post-cycle="0" title="Event details" data-act="ajax-modal" data-title="Event details" data-action-url="https://rise.fairsketch.com/events/view/">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-lock icon-16 mr5" style={{ color: event.color, marginTop: '-3px' }}>
+                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                                    </svg>
+                                                                    {event.title}
+                                                                </a>
+                                                            </div>
+                                                            <div class="ml20 pl5">{event.date}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div><a href="https://rise.fairsketch.com/events" class="btn btn-default w-100 mt15">View on calendar</a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-grid icon-16">
+                                                <rect x="3" y="3" width="7" height="7"></rect>
+                                                <rect x="14" y="3" width="7" height="7"></rect>
+                                                <rect x="14" y="14" width="7" height="7"></rect>
+                                                <rect x="3" y="14" width="7" height="7"></rect>
+                                            </svg>&nbsp; Open Projects
+                                        </div>
+                                        <div class="card-body pt0 rounded-bottom" id="open-projects-container" style={{ height: '330px', position: 'relative', overflowY: 'scroll' }}>
+                                            {projects.map(project => (
+                                                <div key={project.id} class="clearfix row projects-row">
+                                                    <div class="col-md-7 col-sm-7 mt15"><a href={`https://rise.fairsketch.com/projects/view/${project.id}`}>{project.title}</a></div>
+                                                    <div class="col-md-5 col-sm-5">
+                                                        <div class="progress" title={`${project.progress}%`}>
+                                                            <div class="progress-bar bg-primary" role="progressbar" aria-valuenow={project.progress} aria-valuemin="0" aria-valuemax="100" style={{ width: `${project.progress}%` }}></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-check-square icon-16">
+                                            <polyline points="9 11 12 14 22 4"></polyline>
+                                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                        </svg>
+                                        &nbsp; To do (Private)
+                                        </div>
+                                        <form /*onSubmit={handleSubmit} */id="todo-inline-form">
+                                        <div class="widget-todo-input-box mb0 todo-input-box">
+                                            <div class="input-group pb15">
+                                            <input type="text" /*value={title} onChange={(e) => setTitle(e.target.value)} */class="form-control" placeholder="Add a to do..." />
+                                            <span class="input-group-btn">
+                                                <button type="submit" class="btn btn-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-check-circle icon-16">
+                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                </svg>
+                                                Save
+                                                </button>
+                                            </span>
+                                            </div>
+                                        </div>
+                                        </form>
+                                        <div class="table-responsive" id="todo-list-widget-table" style={{ height: '653px', position: 'relative', overflowY: 'scroll' }}>
+                                        <table id="todo-table" class="display dataTable no-footer" cellSpacing="0" width="100%" role="grid">
+                                            <thead>
+                                            <tr role="row">
+                                                <th class="w25"></th>
+                                                <th>Title</th>
+                                                <th class="w50">Date</th>
+                                                <th class="text-center option w80">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-menu icon-16">
+                                                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                                                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                                                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                                                </svg>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr /*key={todo.id} class={todo.status === 'done' ? 'done' : ''}*/>
+                                                <td class="w25 b-warning">
+                                                    <i class="hide">/</i>
+                                                    <a  title="" /*data-id={todo.id} data-value={todo.status} onClick={() => handleStatusChange(todo.id, todo.status === 'to_do' ? 'done' : 'to_do')}*/>
+                                                    <span ></span>
+                                                    </a>
+                                                </td>
+                                                <td><a  class="edit"></a></td>
+                                                <td class="w50"></td>
+                                                <td class="text-center option w80">
+                                                    <a  class="edit" title="Edit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-edit icon-16">
+                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                    </svg>
+                                                    </a>
+                                                    <a  title="Delete" /*onClick={() => handleDelete(todo.id)}*/>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-x icon-16">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                    </a>
+                                                </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="dashboards-row clearfix row">
+                                <div class="widget-container col-md-8">
+                                    <div class="card bg-white">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list icon-16">
+                                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                            </svg>&nbsp; My Tasks
+                                        </div>
+                                        <div class="table-responsive" id="my-task-list-widget-table" style={{height: "330px", position: "relative", overflowY: "scroll"}}>
+                                            <div id="task-table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                                                <div class="filter-section-container">
+                                                    <div class="filter-section-flex-row">
+                                                        <div class="filter-section-left">
+                                                            <div class="filter-item-box">
+                                                                <button class="btn btn-default column-show-hide-popover" data-container="body" data-bs-toggle="popover" data-placement="bottom">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-columns icon-16">
+                                                                        <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"></path>
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="filter-section-right">
+                                                            <div class="filter-item-box">
+                                                                <div id="task-table_filter" class="dataTables_filter">
+                                                                    <label>
+                                                                        <input type="search" class="form-control form-control-sm" placeholder="Search" aria-controls="task-table"/>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="task-table_processing" class="dataTables_processing card" style={{display: "none"}}>
+                                                        <div class="table-loader">
+                                                            <span class="loading"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <table id="task-table" class="display dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="task-table_info">            
+                                                    <thead>
+                                                        <tr role="row">
+                                                            <th class="w70 sorting" tabindex="0" aria-controls="task-table" rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">ID</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="task-table" rowspan="1" colspan="1" aria-label="Title: activate to sort column ascending">Title</th>
+                                                            <th class="w80 sorting" tabindex="0" aria-controls="task-table" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending">Start date</th>
+                                                            <th class="w80 sorting" tabindex="0" aria-controls="task-table" rowspan="1" colspan="1" aria-label="Deadline: activate to sort column ascending">Deadline</th>
+                                                            <th class="w80 sorting" tabindex="0" aria-controls="task-table" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending">Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="odd">
+                                                            <td class=" w70" style={{borderLeft:"5px solid #F9A52D !important"}}>
+                                                                <a  title="" class="js-task" data-id="3517" data-value="3" data-act="update-task-status-checkbox">
+                                                                    <span class="checkbox-blank mr15 float-start"></span>
+                                                                </a>
+                                                                3517
+                                                            </td>
+                                                            <td>
+                                                                <a  title="Task info #3517" data-post-id="3517" data-search="#3517" class="" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3517" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                    Sketch and outline illustrations
+                                                                </a>
+                                                                <span class="float-end ml5"></span>
+                                                                <span class="float-end" title="Priority: Major">
+                                                                    <span class="sub-task-icon priority-badge" style={{background: "#e18a00"}}> 
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
+                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                                                                            <polyline points="5 12 12 5 19 12"></polyline>
+                                                                        </svg>
+                                                                    </span> 
+                                                                </span>
+                                                                <span class="float-end mr5"></span>
+                                                            </td>
+                                                            <td class=" w80">-</td>
+                                                            <td class=" w80">24-08-2024</td>
+                                                            <td class=" w80">
+                                                                <a  title="" class="" data-id="3517" data-value="1" data-act="update-task-status">
+                                                                    To do
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="even">
+                                                            <td class=" w70" style={{borderLeft:"5px solid #1672B9 !important"}}>
+                                                                <a  title="" class="js-task" data-id="3525" data-value="3" data-act="update-task-status-checkbox">
+                                                                    <span class="checkbox-blank mr15 float-start"></span>
+                                                                </a>
+                                                                3525
+                                                            </td>
+                                                            <td>
+                                                                <a  title="Task info #3525" data-post-id="3525" data-search="#3525" class="" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3525" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                    Create illustration assets for printing
+                                                                </a>
+                                                                <span class="float-end ml5"></span>
+                                                                <span class="float-end"></span>
+                                                                <span class="float-end mr5">
+                                                                    <span class="mt0 badge  clickable" style={{backgroundColor:"#4a8af4"}} title="Label">
+                                                                        Enhancement
+                                                                    </span>
+                                                                </span>
+                                                            </td>
+                                                            <td class=" w80">-</td>
+                                                            <td class=" w80">24-08-2024</td>
+                                                            <td class=" w80">
+                                                                <a  title="" class="" data-id="3525" data-value="2" data-act="update-task-status">
+                                                                    In progress
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="odd">
+                                                            <td class=" w70" style={{borderLeft:"5px solid #F9A52D !important"}}>
+                                                                <a  title="" class="js-task" data-id="3530" data-value="3" data-act="update-task-status-checkbox">
+                                                                    <span class="checkbox-blank mr15 float-start"></span>
+                                                                </a>
+                                                                3530
+                                                            </td>
+                                                            <td>
+                                                                <a  title="Task info #3530" data-post-id="3530" data-search="#3530" class="" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3530" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                    Design game characters and assets
+                                                                </a>
+                                                                <span class="float-end ml5"></span>
+                                                                <span class="float-end"></span>
+                                                                <span class="float-end mr5">
+                                                                    <span class="mt0 badge  clickable" style={{backgroundcolor:"#d43480"}} title="Label">Bug</span> 
+                                                                </span>
+                                                            </td>
+                                                            <td class=" w80">-</td>
+                                                            <td class=" w80">17-08-2024</td>
+                                                            <td class=" w80">
+                                                                <a  title="" class="" data-id="3530" data-value="1" data-act="update-task-status">
+                                                                    To do
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="even">
+                                                            <td class=" w70" style={{borderLeft:"5px solid #F9A52D !important"}}>
+                                                                <a  title="" class="js-task" data-id="3427" data-value="3" data-act="update-task-status-checkbox">
+                                                                    <span class="checkbox-blank mr15 float-start"></span>
+                                                                </a>
+                                                                3427
+                                                            </td>
+                                                            <td>
+                                                                <a  title="Task info #3427" data-post-id="3427" data-search="#3427" class="" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3427" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                    Identify potential social media influencers
+                                                                </a>
+                                                                <span class="float-end ml5"></span>
+                                                                <span class="float-end" title="Priority: Major">
+                                                                    <span class="sub-task-icon priority-badge" style={{background: "#e18a00"}}>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
+                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                                                                            <polyline points="5 12 12 5 19 12"></polyline>
+                                                                        </svg>
+                                                                    </span> 
+                                                                </span>
+                                                                <span class="float-end mr5"></span>
+                                                            </td>
+                                                            <td class=" w80">-</td>
+                                                            <td class=" w80">07-08-2024</td>
+                                                            <td class=" w80">
+                                                                <a  title="" class="" data-id="3427" data-value="1" data-act="update-task-status">
+                                                                    To do
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="odd">
+                                                            <td class=" w70" style={{borderLeft:"5px solid #F9A52D !important"}}>
+                                                                <a  title="" class="js-task" data-id="3435" data-value="3" data-act="update-task-status-checkbox">
+                                                                    <span class="checkbox-blank mr15 float-start"></span>
+                                                                </a>
+                                                                3435
+                                                            </td>
+                                                            <td>
+                                                                <a  title="Task info #3435" data-post-id="3435" data-search="#3435" class="" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3435" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                    Measure influencer campaign success
+                                                                </a>
+                                                                <span class="float-end ml5"></span>
+                                                                <span class="float-end" title="Priority: Major">
+                                                                    <span class="sub-task-icon priority-badge" style={{background: "#e18a00"}}>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up icon-14">
+                                                                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                                                                            <polyline points="5 12 12 5 19 12"></polyline>
+                                                                        </svg>
+                                                                    </span> 
+                                                                </span>
+                                                                <span class="float-end mr5"></span>
+                                                            </td>
+                                                            <td class=" w80">-</td>
+                                                            <td class=" w80">07-08-2024</td>
+                                                            <td class=" w80">
+                                                                <a  title="" class="" data-id="3435" data-value="1" data-act="update-task-status">
+                                                                    To do
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="even">
+                                                            <td class=" w70" style={{borderLeft:"5px solid #1672B9 !important"}}>
+                                                                <a  title="" class="js-task" data-id="3654" data-value="3" data-act="update-task-status-checkbox">
+                                                                    <span class="checkbox-blank mr15 float-start"></span>
+                                                                </a>
+                                                                3654
+                                                            </td>
+                                                            <td>
+                                                                <a  title="Task info #3654" data-post-id="3654" data-search="#3654" class="" data-modal-lg="1" data-act="ajax-modal" data-title="Task info #3654" data-action-url="https://rise.fairsketch.com/tasks/view">
+                                                                    test w
+                                                                </a>
+                                                                <span class="float-end ml5"></span>
+                                                                <span class="float-end">
+                                                                    <span class="filter-sub-task-button clickable ml5" title="Show sub tasks" main-task-id="#3654">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter icon-16">
+                                                                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                                                        </svg>
+                                                                    </span>
+                                                                </span>
+                                                                <span class="float-end mr5"></span>
+                                                            </td>
+                                                            <td class=" w80">26-07-2024</td>
+                                                            <td class=" w80">
+                                                                <span class="text-danger">28-07-2024</span> 
+                                                            </td>
+                                                            <td class=" w80">
+                                                                <a  title="" class="" data-id="3654" data-value="2" data-act="update-task-status">
+                                                                    In progress
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                           
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-container col-md-4">
+                                    <div class="card bg-white h370">
+                                        <div class="card-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book icon-16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>&nbsp; Sticky Note (Private)    </div>
+                                        <div id="sticky-note-container">
+                                            <textarea name="note" cols="40" rows="10" id="sticky-note" class="sticky-note" style={{height:"326px"}}>123</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>            
-                
+                   </div>
+               </div>
             </div>
-
+            
             <div class="modal fade" id="ajaxModal" role="dialog" aria-labelledby="ajaxModal" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true" data-bs-focus="false">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -1048,19 +1543,41 @@ function Dashboard () {
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div id="ajaxModalContent">
+
                         </div>
                         <div id="ajaxModalOriginalContent" class="hide">
                             <div class="original-modal-body">
                                 <div class="circle-loader"></div>
                             </div>
-
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>   
+            <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModal" aria-hidden="true">
+                <div class="modal-dialog" style={{maxWidth: "400px"}}>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="confirmationModalTitle">Delete?</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div id="confirmationModalContent" class="modal-body">
+                            <div class="container-fluid">
+                                Are you sure? You won't be able to undo this action!                </div>
+                        </div>
+                        <div class="modal-footer clearfix">
+                            <button id="confirmDeleteButton" type="button" class="btn btn-danger" data-bs-dismiss="modal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 icon-16"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Delete</button>
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x icon-16"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <span role="status" aria-live="polite" class="select2-hidden-accessible"></span>
+            
         </div>
+    );
+};
 
-    )
-}
-
-export default Dashboard
+export default Dashboard;

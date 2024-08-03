@@ -14,6 +14,9 @@ import Notes from './composants/Admin/Notes';
 import Messages from './composants/Admin/Messages';
 import Tickets from './composants/Admin/Tickets';
 import Expenses from './composants/Admin/Expenses';
+import Subscriptions from './composants/Admin/Subscriptions';
+
+import $ from 'jquery';
 
 function App() {
  /* const [backendData, setBackendData] = useState([{}]);
@@ -39,7 +42,7 @@ function App() {
           <Route path="/admin.projects" element={<Projects />} />
           <Route path="/admin.tasks" element={<Tasks />} />
           <Route path="/admin.leads" element={<Leads />} />
-          <Route path="/admin.subscriptions" element={<Subscription />} />
+          <Route path="/admin.subscriptions" element={<Subscriptions />} />
           <Route path="/admin.notes" element={<Notes />} />
           <Route path="/admin.messages" element={<Messages />} />
           <Route path="/admin.tickets" element={<Tickets />} />

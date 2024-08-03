@@ -1,0 +1,537 @@
+/*import React, { useEffect } from 'react';
+import $ from 'jquery';
+import 'feather-icons';
+
+const ChatComponent = () => {
+
+  $(document).click(function (e) {
+    if (!$(e.target).is('#navbar') && isMobile()) {
+        $('#navbar').collapse('hide');
+    }
+});
+
+var notificationOptions = {};
+
+$(document).ready(function () {
+    //load message notifications
+    var messageOptions = {},
+            messageIcon = "#message-notification-icon",
+            notificationIcon = "#web-notification-icon";
+
+    //check message notifications
+    messageOptions.notificationUrl = "https://rise.fairsketch.com/messages/count_notifications";
+    messageOptions.notificationStatusUpdateUrl = "https://rise.fairsketch.com/messages/update_notification_checking_status";
+    messageOptions.checkNotificationAfterEvery = "60";
+    messageOptions.icon = "mail";
+    messageOptions.notificationSelector = $(messageIcon);
+    messageOptions.isMessageNotification = true;
+
+    checkNotifications(messageOptions);
+
+    window.updateLastMessageCheckingStatus = function () {
+        checkNotifications(messageOptions, true);
+    };
+
+    $('body').on('show.bs.dropdown', messageIcon, function () {
+        messageOptions.notificationUrl = "https://rise.fairsketch.com/messages/get_notifications";
+        checkNotifications(messageOptions, true);
+    });
+
+
+
+
+    //check web notifications
+    notificationOptions.notificationUrl = "https://rise.fairsketch.com/notifications/count_notifications";
+    notificationOptions.notificationStatusUpdateUrl = "https://rise.fairsketch.com/notifications/update_notification_checking_status";
+    notificationOptions.checkNotificationAfterEvery = "60";
+    notificationOptions.icon = "bell";
+    notificationOptions.notificationSelector = $(notificationIcon);
+    notificationOptions.notificationType = "web";
+    notificationOptions.pushNotification = "";
+
+    checkNotifications(notificationOptions); //start checking notification after starting the message checking 
+
+    if (isMobile()) {
+        //for mobile devices, load the notifications list with the page load
+        notificationOptions.notificationUrlForMobile = "https://rise.fairsketch.com/notifications/get_notifications";
+        checkNotifications(notificationOptions);
+    }
+
+    $('body').on('show.bs.dropdown', notificationIcon, function () {
+        notificationOptions.notificationUrl = "https://rise.fairsketch.com/notifications/get_notifications";
+        checkNotifications(notificationOptions, true);
+    });
+
+    $('body').on('click', "#reminder-icon", function () {
+        $("#ajaxModal").addClass("reminder-modal");
+    });
+
+    $("body").on("click", ".notification-dropdown a[data-act='ajax-modal'], #js-quick-add-task, #js-quick-add-multiple-task, #task-details-edit-btn, #task-modal-view-link", function () {
+        if ($(".task-preview").length) {
+            //remove task details view when it's already opened to prevent selector duplication
+            $("#page-content").remove();
+            $('#ajaxModal').on('hidden.bs.modal', function () {
+                location.reload();
+            });
+        }
+    });
+
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
+    $(document).ready(function () {
+
+        chatIconContent = {
+            "open": "<i data-feather='message-circle' class='icon-18'></i>",
+            "close": "<span class='chat-close'>&times;</span>",
+            "unread": ""
+        };
+
+        //we'll wait for 15 sec after clicking on the unread icon to see more notifications again.
+
+        setChatIcon = function (type, count) {
+
+            //don't show count if the data-prevent-notification-count is 1
+            if ($("#js-chat-min-icon").attr("data-prevent-notification-count") === "1" && type === "unread") {
+                return false;
+            }
+
+
+            $("#js-chat-min-icon").attr("data-type", type).html(count ? count : chatIconContent[type]);
+
+            if (type === "open") {
+                $("#js-rise-chat-wrapper").addClass("hide"); //hide chat box
+                $("#js-init-chat-icon").removeClass("has-message");
+            } else if (type === "close") {
+                $("#js-rise-chat-wrapper").removeClass("hide"); //show chat box
+                $("#js-init-chat-icon").removeClass("has-message");
+            } else if (type === "unread") {
+                $("#js-init-chat-icon").addClass("has-message");
+            }
+
+        };
+
+        changeChatIconPosition = function (type) {
+            if (type === "close") {
+                $("#js-init-chat-icon").addClass("move-chat-icon");
+            } else if (type === "open") {
+                $("#js-init-chat-icon").removeClass("move-chat-icon");
+            }
+        };
+
+        //is there any active chat? open the popup
+        //otherwise show the chat icon only
+        var activeChatId = getCookie("active_chat_id"),
+                isChatBoxOpen = getCookie("chatbox_open"),
+                $chatIcon = $("#js-init-chat-icon");
+
+
+        $chatIcon.click(function () {
+            $("#js-rise-chat-wrapper").html("");
+
+            window.updateLastMessageCheckingStatus();
+
+            var $chatIcon = $("#js-chat-min-icon");
+
+            if ($chatIcon.attr("data-type") === "unread") {
+                $chatIcon.attr("data-prevent-notification-count", "1");
+
+                //after clicking on the unread icon, we'll wait 11 sec to show more notifications again.
+                setTimeout(function () {
+                    $chatIcon.attr("data-prevent-notification-count", "0");
+                }, 11000);
+            }
+
+            var windowSize = window.matchMedia("(max-width: 767px)");
+
+            if ($chatIcon.attr("data-type") !== "close") {
+                //have to reload
+                setTimeout(function () {
+                    loadChatTabs();
+                }, 200);
+                setChatIcon("close"); //show close icon
+                setCookie("chatbox_open", "1");
+                if (windowSize.matches) {
+                    changeChatIconPosition("close");
+                }
+            } else {
+                //have to close the chat box
+                setChatIcon("open"); //show open icon
+                setCookie("chatbox_open", "");
+                setCookie("active_chat_id", "");
+                if (windowSize.matches) {
+                    changeChatIconPosition("open");
+                }
+            }
+
+            if (window.activeChatChecker) {
+                window.clearInterval(window.activeChatChecker);
+            }
+
+            if (typeof window.placeCartBox === "function") {
+                window.placeCartBox();
+            }
+            
+            feather.replace();
+
+        });
+
+        //open chat box
+        if (isChatBoxOpen) {
+
+            if (activeChatId) {
+                getActiveChat(activeChatId);
+            } else {
+                loadChatTabs();
+            }
+        }
+
+        var windowSize = window.matchMedia("(max-width: 767px)");
+        if (windowSize.matches) {
+            if (isChatBoxOpen) {
+                $("#js-init-chat-icon").addClass("move-chat-icon");
+            }
+        }
+
+
+
+
+        $('body #js-rise-chat-wrapper').on('click', '.js-message-row', function () {
+            getActiveChat($(this).attr("data-id"));
+        });
+
+        $('body #js-rise-chat-wrapper').on('click', '.js-message-row-of-team-members-tab', function () {
+            getChatlistOfUser($(this).attr("data-id"), "team_members");
+        });
+
+        $('body #js-rise-chat-wrapper').on('click', '.js-message-row-of-clients-tab', function () {
+            getChatlistOfUser($(this).attr("data-id"), "clients");
+        });
+
+
+    });
+
+    function getChatlistOfUser(user_id, tab_type) {
+
+        setChatIcon("close"); //show close icon
+
+        appLoader.show({container: "#js-rise-chat-wrapper", css: "bottom: 40%; right: 35%;"});
+        $.ajax({
+            url: "https://rise.fairsketch.com/messages/get_chatlist_of_user",
+            type: "POST",
+            data: {user_id: user_id, tab_type: tab_type},
+            success: function (response) {
+                $("#js-rise-chat-wrapper").html(response);
+                appLoader.hide();
+            }
+        });
+    }
+
+    function loadChatTabs(trigger_from_user_chat) {
+
+        setChatIcon("close"); //show close icon
+
+        setCookie("active_chat_id", "");
+        appLoader.show({container: "#js-rise-chat-wrapper", css: "bottom: 40%; right: 35%;"});
+        $.ajax({
+            url: "https://rise.fairsketch.com/messages/chat_list",
+            data: {
+                type: "inbox"
+            },
+            success: function (response) {
+                $("#js-rise-chat-wrapper").html(response);
+
+                if (!trigger_from_user_chat) {
+                    $("#chat-inbox-tab-button a").trigger("click");
+                } else if (trigger_from_user_chat === "team_members") {
+                    $("#chat-users-tab-button").find("a").trigger("click");
+                } else if (trigger_from_user_chat === "clients") {
+                    $("#chat-clients-tab-button").find("a").trigger("click");
+                }
+                appLoader.hide();
+            }
+        });
+
+    }
+
+
+    function getActiveChat(message_id) {
+        setChatIcon("close"); //show close icon
+
+        appLoader.show({container: "#js-rise-chat-wrapper", css: "bottom: 40%; right: 35%;"});
+        $.ajax({
+            url: "https://rise.fairsketch.com/messages/get_active_chat",
+            type: "POST",
+            data: {
+                message_id: message_id
+            },
+            success: function (response) {
+                $("#js-rise-chat-wrapper").html(response);
+                appLoader.hide();
+                setCookie("active_chat_id", message_id);
+                $("#js-chat-message-textarea").focus();
+            }
+        });
+    }
+
+    window.prepareUnreadMessageChatBox = function (totalMessages) {
+        setChatIcon("unread", totalMessages); //show close icon
+    };
+
+
+    window.triggerActiveChat = function (message_id) {
+        getActiveChat(message_id);
+    }
+
+    AppHelper = {};
+    AppHelper.baseUrl = "https://rise.fairsketch.com/";
+    AppHelper.assetsDirectory = "https://rise.fairsketch.com/assets/";
+    AppHelper.settings = {};
+    AppHelper.settings.firstDayOfWeek = "0" || 0;
+    AppHelper.settings.currencySymbol = "$";
+    AppHelper.settings.currencyPosition = "left" || "left";
+    AppHelper.settings.decimalSeparator = ".";
+    AppHelper.settings.thousandSeparator = "";
+    AppHelper.settings.noOfDecimals = ("2" == "0") ? 0 : 2;
+    AppHelper.settings.displayLength = "10";
+    AppHelper.settings.dateFormat = "d-m-Y";
+    AppHelper.settings.timeFormat = "small";
+    AppHelper.settings.scrollbar = "native";
+    AppHelper.settings.enableRichTextEditor = "1";
+    AppHelper.settings.notificationSoundVolume = "";
+    AppHelper.settings.disableKeyboardShortcuts = "";
+    AppHelper.userId = "1";
+    AppHelper.notificationSoundSrc = "https://rise.fairsketch.com/files/system/notification.mp3";
+
+    //push notification
+    AppHelper.settings.enablePushNotification = "";
+    AppHelper.settings.userEnableWebNotification = "1";
+    AppHelper.settings.userDisablePushNotification = "";
+    AppHelper.settings.pusherKey = "";
+    AppHelper.settings.pusherCluster = "";
+    AppHelper.settings.pushNotficationMarkAsReadUrl = "https://rise.fairsketch.com/notifications/set_notification_status_as_read";
+    AppHelper.https = "1";
+
+    AppHelper.settings.disableResponsiveDataTableForMobile = "";
+    AppHelper.settings.disableResponsiveDataTable = "";
+
+    AppHelper.csrfTokenName = "rise_csrf_token";
+    AppHelper.csrfHash = "6538f41944a4e456b5dd7b6edbdc6c0b";
+
+    AppHelper.settings.defaultThemeColor = "F2F2F2";
+
+    AppHelper.settings.timepickerMinutesInterval = 5;
+
+   /* AppHelper.settings.weekends = "0";
+    AppHelper.settings.filters = {"0":{"context":"all_tasks_list","id":"steanlmnrd","title":"All tasks","params":{"status_id":["1","2","4"]},"bookmark":"1","icon":""},"1":{"context":"all_tasks_list","id":"hwyzuyrjui","title":"My Tasks","params":{"status_id":["1","2","4"],"specific_user_id":"1"},"bookmark":"1","icon":"user"},"2":{"context":"all_tasks_list","id":"hjcrheybnc","title":"Major","params":{"status_id":["1","2","4"],"priority_id":"2"},"bookmark":"1","icon":"arrow-up"},"3":{"context":"all_tasks_list","id":"lvgspoumjj","title":"Bug","params":{"status_id":["1","2","4"],"label_id":"6"},"bookmark":"1","icon":""},"5":{"context":"all_tasks_list","id":"xgvxgnwpnv","title":"Recently Updated","params":{"status_id":["1","2","4"],"quick_filter":"recently_updated"},"bookmark":"1","icon":"sun"},"6":{"context":"all_tasks_kanban","id":"uyprvjoabx","title":"Bug","params":{"customFilter":true,"label_id":"6"},"icon":"","bookmark":"1"},"7":{"context":"all_tasks_kanban","id":"ckictkmymt","title":"Major","params":{"customFilter":true,"priority_id":"2"},"bookmark":"1","icon":"arrow-up"},"8":{"context":"all_tasks_kanban","id":"bhcvpxosnw","title":"Recently updated","params":{"customFilter":true,"quick_filter":"recently_updated"},"bookmark":"1","icon":"sun"},"9":{"context":"all_tasks_kanban","id":"ysunozjtnm","title":"Critical","params":{"customFilter":true,"priority_id":"3"},"bookmark":"1","icon":"alert-circle"},"10":{"context":"all_tasks_kanban","id":"tlnpmbosnh","title":"My tasks","params":{"customFilter":true,"specific_user_id":1},"bookmark":"1","icon":"user"},"11":{"context":"all_tasks_kanban","id":"wxgvizqpbd","title":"All tasks","params":{"customFilter":true},"bookmark":"1","icon":""},"12":{"context":"all_leads_list","id":"cmxmysjcqd","title":"90%","params":{"label_id":"12"},"bookmark":"1","icon":""},"13":{"context":"all_leads_list","id":"lsnwwlqybf","title":"50%","params":{"label_id":"11"},"bookmark":"1","icon":""},"14":{"context":"all_leads_list","id":"wpgrexnntf","title":"Call this week","params":{"label_id":"10"},"bookmark":"1","icon":"phone-call"},"15":{"context":"all_leads_kanban","id":"rijfpnvwxe","title":"90%","params":{"customFilter":true,"label_id":"12"},"bookmark":"1","icon":""},"16":{"context":"all_leads_kanban","id":"gthdyeeups","title":"50%","params":{"customFilter":true,"label_id":"11"},"bookmark":"1"},"17":{"context":"all_leads_kanban","id":"gqsxcifjni","title":"Call this week","params":{"customFilter":true,"label_id":"10"},"bookmark":"1","icon":"phone-call"},"18":{"context":"all_clients_list","id":"oxwsislhvc","title":"Has due","params":{"quick_filter":"has_unpaid_invoices"},"icon":"","bookmark":"1"},"19":{"context":"all_clients_list","id":"cxaeuodiwq","title":"VIP","params":{"group_id":"2"},"bookmark":"1","icon":"award"},"20":{"context":"all_clients_list","id":"gyjjmpetoj","title":"Has open projects","params":{"quick_filter":"has_open_projects"},"bookmark":"1","icon":"coffee"},"21":{"context":"all_clients_list","id":"jyetvrypad","title":"All clients","params":{}},"22":{"context":"all_clients_list","id":"wrfnxlynyk","title":"My clients","params":{"created_by":"1"}},"23":{"context":"all_projects_list","id":"ohenbtrdgc","title":"Open projects","params":{"status_id":["1"]},"bookmark":"1","icon":"coffee"},"24":{"context":"all_projects_list","id":"gncqxkcoto","title":"Upcoming","params":{"status_id":["1"],"project_label":"3"},"bookmark":"1","icon":""},"25":{"context":"all_projects_list","id":"tiyhayaffv","title":"Completed","params":{"status_id":["2"]},"bookmark":"1","icon":"check-circle"},"26":{"context":"all_projects_list","id":"ecmkusuchl","title":"All projects","params":{},"bookmark":"1","icon":""},"27":{"context":"tickets_list","id":"yesfegadtk","title":"Open","params":{"status":"open"},"icon":"","bookmark":"1"},"28":{"context":"tickets_list","id":"wgjnsdkmkh","title":"My tickets","params":{"assigned_to":"1","status":"open"},"bookmark":"1","icon":"user"},"29":{"context":"tickets_list","id":"nhoxdjxtyn","title":"All tickets","params":{}},"30":{"context":"tickets_list","id":"iifhxejebn","title":"Important","params":{"status":"open","ticket_label":"13"},"bookmark":"1"},"31":{"context":"project_tasks_list","id":"ueybubcqww","title":"My tasks","params":{"status_id":["1","2","4"],"assigned_to":"1"},"bookmark":"1","icon":"user"},"32":{"context":"project_tasks_list","id":"uxqbekwjtu","title":"All tasks","params":{"status_id":[]},"icon":"","bookmark":"1"},"33":{"context":"project_tasks_list","id":"rcwgimeqne","title":"Recently updated","params":{"status_id":["1","2","4"],"quick_filter":"recently_updated"},"bookmark":"1","icon":"sun"},"34":{"context":"project_tasks_kanban","id":"lkpsibjzmj","title":"All tasks","params":{"customFilter":true},"bookmark":"1"},"35":{"context":"project_tasks_kanban","id":"vbbitqumru","title":"My tasks","params":{"customFilter":true,"specific_user_id":"1"},"bookmark":"1","icon":"user"},"36":{"context":"project_tasks_kanban","id":"pcedkdcptw","title":"Recently updated","params":{"customFilter":true,"quick_filter":"recently_updated"},"bookmark":"1","icon":"sun"},"37":{"context":"all_leads_list","id":"puwulxyxjh","title":"All leads","params":{}},"39":{"context":"all_clients_list","id":"vspvrtuwes","title":"My Clients","params":{"created_by":"1"},"bookmark":"1","icon":"user"},"40":{"context":"all_leads_kanban","id":"lfjvhijtmj","title":"All leads","params":{"customFilter":true}},"41":{"context":"all_leads_kanban","id":"ccimrehida","title":"My leads","params":{"customFilter":true,"owner_id":"1"},"bookmark":"1","icon":"user"},"42":{"context":"all_projects_list","id":"nkuyhedude","title":"High Priority","params":{"project_label":"1"},"bookmark":"1"},"43":{"context":"project_tasks_list","id":"jlhtonnpbk","title":"Bug","params":{"status_id":[],"label_id":"6"},"bookmark":"1"},"44":{"context":"project_tasks_kanban","id":"ggjynqqwbk","title":"Bug","params":{"customFilter":true,"label_id":"6"},"bookmark":"1"},"45":{"context":"all_tasks_list","id":"bqcysoeppi","title":"Critical","params":{"status_id":["1","2","4"],"priority_id":"3"},"bookmark":"1","icon":"alert-circle"}};
+
+    AppHelper.serviceWorkerUrl = "https://rise.fairsketch.com/assets/js/sw/sw.js";
+    AppHelper.uploadPastedImageLink = "https://rise.fairsketch.com/upload_pasted_image/save";
+    AppHelper.uploadMaxFileSize = 2097152;
+
+    
+    AppLanugage = {};
+AppLanugage.locale = "en";
+AppLanugage.localeLong = "en-US";
+
+AppLanugage.days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+AppLanugage.daysShort = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+AppLanugage.daysMin = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+AppLanugage.months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+AppLanugage.monthsShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+AppLanugage.today = "Today";
+AppLanugage.yesterday = "Yesterday";
+AppLanugage.tomorrow = "Tomorrow";
+AppLanugage.last_7_days = "Last 7 Days";
+AppLanugage.next_7_days = "Next 7 Days";
+AppLanugage.last_30_days = "Last 30 Days";
+AppLanugage.this_month = "This Month";
+AppLanugage.last_month = "Last Month";
+AppLanugage.next_month = "Next Month";
+AppLanugage.this_year = "This Year";
+AppLanugage.next_year = "Next Year";
+AppLanugage.last_year = "Last Year";
+
+AppLanugage.search = "Search";
+AppLanugage.noRecordFound = "No record found.";
+AppLanugage.print = "Print";
+AppLanugage.excel = "Excel";
+AppLanugage.printButtonTooltip = "Press escape when finished.";
+
+AppLanugage.fileUploadInstruction = "Drag-and-drop documents here <br /> (or click to browse...)";
+AppLanugage.fileNameTooLong = "Filename is too long.";
+
+AppLanugage.custom = "Custom";
+AppLanugage.clear = "Clear";
+
+AppLanugage.total = "Total";
+AppLanugage.totalOfAllPages = "Total of all pages";
+
+AppLanugage.all = "All";
+
+AppLanugage.preview_next_key = "Next (Right arrow key)";
+AppLanugage.preview_previous_key = "Previous (Left arrow key)";
+
+AppLanugage.filters = "Filters";
+AppLanugage.manageFilters = "Manage Filters";
+AppLanugage.newFilter = "New filter";
+AppLanugage.addNewFilter = "Add new filter";
+AppLanugage.updateFilter = "Update filter";
+
+AppLanugage.comment = "Comment";
+
+AppLanugage.undo = "Undo";
+
+AppLanugage.fileSizeTooLong = "File size is too large. Please increase the upload_max_filesize from server.";
+AppLanugage.somethingWentWrong = "Oops, something went wrong!";
+
+
+  useEffect(() => {
+    var reminders = [];
+
+    getMissedRemindersCount = function () {
+      $.ajax({
+          url: "https://rise.fairsketch.com/events/count_missed_reminders",
+          dataType: "json",
+          success: function (result) {
+              var badge = "";
+              if (result.success && result.total_reminders && result.total_reminders * 1) {
+                  badge = "<span class='badge bg-danger up'>" + result.total_reminders + "</span>";
+              }
+
+              $("#reminder-icon").html("<i data-feather='clock' class='icon'></i> " + badge);
+              feather.replace();
+          }
+      });
+  };
+
+  getReminders = function () {
+      $.ajax({
+          url: "https://rise.fairsketch.com/events/get_reminders_for_current_user",
+          dataType: "json",
+          success: function (result) {
+              reminders = result.reminders;
+          }
+      });
+
+      getMissedRemindersCount();
+  };
+
+  getMissedRemindersCount();
+
+  $(document).ready(function () {
+      function checkReminders() {
+          $.each(reminders, function (index, reminder) {
+              if ((moment().format("YYYY-MM-DD") === reminder.start_date && moment().format("HH:mm") === moment(reminder.start_time, "HH:mm:ss").format("HH:mm") && !reminder.snoozing_time && !reminder.next_recurring_time) //main reminder time
+                      || moment(reminder.snoozing_time, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm") === moment().format("YYYY-MM-DD HH:mm") //snoozing time
+                      || moment(reminder.next_recurring_time, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm") === moment().format("YYYY-MM-DD HH:mm") //recurring time
+                      ) {
+                  showReminder(reminder);
+              }
+          });
+      }
+
+      checkReminders(); //on loading a page, on first minute the interval won't work
+      window.setInterval(function () {
+          checkReminders();
+      }, 60000); //check reminders in every 1 minute
+
+      function showReminder(reminder) {
+          playNotification();
+
+          if (AppHelper.https === "1") {
+              //browser notification
+              var data = {
+                  message: reminder.title,
+                  title: reminder.title,
+                  icon: "https://rise.fairsketch.com/assets/images/avatar-bot.jpg",
+                  notification_id: reminder.id,
+                  url_attributes: "href='#' data-act='ajax-modal' data-title='Reminder details' data-action-url='https://rise.fairsketch.com/events/reminder_view' data-post-id='" + reminder.id + "'", //open small modal for action
+                  isReminder: true,
+                  notificationTimeout: 60000
+              };
+
+              showBrowserNotification(data);
+          } else {
+              //app notification
+              var detailsDom = '<a class="color-white" data-act="ajax-modal" data-title="Reminder details" data-action-url="https://rise.fairsketch.com/events/reminder_view" data-post-id="' + reminder.id + '" href="javascript:;" >Details</a>';
+              var snoozeDom = '<a class="color-white" data-act="snooze-reminder" href="javascript:;" data-id=' + reminder.id + '>Snooze</a>';
+              var dismissDom = '<a class="color-white" data-act="dismiss-reminder" href="javascript:;" data-id=' + reminder.id + '>Dismiss</a>';
+              var actionButtonsDom = '<br /> ' + detailsDom + ' &#8226; ' + snoozeDom + ' &#8226; ' + dismissDom;
+
+              if (reminder.share_with) {
+                  //don't show snooze button for shared events
+                  actionButtonsDom = '<br /> ' + detailsDom + dismissDom;
+              }
+
+              appAlert.warning(reminder.title + " " + actionButtonsDom, {duration: 300000}); //show reminder for 5 minutes
+          }
+      }
+
+      //snooze
+      $("body").on("click", "[data-act='snooze-reminder']", function () {
+          appLoader.show();
+          $.ajax({url: "https://rise.fairsketch.com/events/snooze_reminder",
+              type: 'POST',
+              dataType: 'json',
+              data: {id: $(this).attr("data-id")},
+              success: function (result) {
+                  if (result.success) {
+                      closeReminder();
+                      if (typeof getReminders === 'function') {
+                          getReminders();
+                      }
+                  }
+              }
+          });
+      });
+
+      //refresh reminders on click any action
+      $("body").on("click", ".reminder-action", function () {
+          setTimeout(function () {
+              if (typeof getReminders === 'function') {
+                  getReminders();
+              }
+          }, 5000);
+      });
+
+      //dismiss
+      $("body").on("click", "[data-act='dismiss-reminder']", function () {
+          appLoader.show();
+          var detailsUrl = $(this).attr("data-details-url");
+
+          $.ajax({url: "https://rise.fairsketch.com/events/save_reminder_status/" + $(this).attr('data-id'),
+              type: 'POST',
+              dataType: 'json',
+              data: {value: "shown"},
+              success: function (result) {
+                  if (result.success) {
+                      closeReminder();
+                      if (detailsUrl) { //on clicking details url, first dismiss the reminder and open details
+                          window.location.href = detailsUrl;
+                      }
+                  }
+              }
+          });
+      });
+
+      function closeReminder() {
+          //close notification and stop sound
+          $(".app-alert .btn-close").trigger("click");
+          $("#reminder-action-modal").closest("#ajaxModal").modal('hide');
+          appLoader.hide();
+      }
+  });
+  }, []);
+
+  return (
+    <div>
+      <div id="js-init-chat-icon">Chat Icon</div>
+      <div id="js-rise-chat-wrapper">Chat Wrapper</div>
+    </div>
+  );
+};
+
+export default ChatComponent;  */

@@ -27,7 +27,7 @@ function Register () {
                         <div class="form-group">
                             <label for="name" class="col-md-12">First name</label>                
                             <div class="col-md-12">
-                                <input type="text" name="first_name" value="" id="first_name" class="form-control" autofocus="" data-rule-required="" data-msg-required="This field is required."/>
+                                <input type="text" name="first_name" id="first_name" class="form-control" autofocus="" data-rule-required="" data-msg-required="This field is required."/>
                             </div>
                         
                         </div>
@@ -35,7 +35,7 @@ function Register () {
                         <div class="form-group">
                             <label for="last_name" class="col-md-12">Last name</label>
                             <div class="col-md-12">
-                                <input type="text" name="last_name" value="" id="last_name" class="form-control" data-rule-required="" data-msg-required="This field is required."/>
+                                <input type="text" name="last_name" id="last_name" class="form-control" data-rule-required="" data-msg-required="This field is required."/>
                             </div>
                         </div>
                             <input type='hidden'></input>  
@@ -55,26 +55,26 @@ function Register () {
                         <div class="form-group company-name-section">
                             <label for="company_name" class="col-md-12">Company name</label>
                             <div class="col-md-12">
-                                <input type="text" name="company_name" value="" id="company_name" class="form-control"/>
+                                <input type="text" name="company_name" id="company_name" class="form-control"/>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="email" class="col-md-12">Email</label>
                             <div class="col-md-12">
-                                <input type="text" name="email" value="" id="email" class="form-control" data-rule-email="" data-msg-email="Please enter a valid email address." data-rule-required="" data-msg-required="This field is required."/>
+                                <input type="text" name="email" id="email" class="form-control" data-rule-email="" data-msg-email="Please enter a valid email address." data-rule-required="" data-msg-required="This field is required."/>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="password" class="col-md-12">Password</label>
                             <div class="col-md-12">
-                                <input type="password" name="password" value="" id="password"   class="form-control" data-rule-required="" data-msg-required="This field is required." data-rule-minlength="6" data-msg-minlength="Please enter at least 6 characters." autocomplete="off" style={{ zIndex: 'auto' }} />
+                                <input type="password" name="password" id="password"   class="form-control" data-rule-required="" data-msg-required="This field is required." data-rule-minlength="6" data-msg-minlength="Please enter at least 6 characters." autocomplete="off" style={{ zIndex: 'auto' }} />
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="retype_password" class="col-md-12">Retype password</label>
                             <div class="col-md-12">
-                                <input type="password" name="retype_password" value="" id="retype_password" class="form-control" data-rule-equalto="#password"  autocomplete="off" style={{ zIndex: 'auto' }}  data-msg-equalto="Please enter the same value again."/>
+                                <input type="password" name="retype_password" id="retype_password" class="form-control" data-rule-equalto="#password"  autocomplete="off" style={{ zIndex: 'auto' }}  data-msg-equalto="Please enter the same value again."/>
                             </div>
                         </div>
 
