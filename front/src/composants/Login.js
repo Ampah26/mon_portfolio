@@ -37,7 +37,7 @@ function Login () {
                 Swal.fire({
                     icon: 'success',
                     title: 'Connexion réussie',
-                    text: `Bienvenue, ${data.nom} ${data.prenom} `,
+                    text: `Bienvenue, ${data.prenom} ${data.nom} `,
                     showConfirmButton: true,
                     timer: 6000
                 });
@@ -80,18 +80,14 @@ function Login () {
                                     </div>
                                     <input type='hidden'></input>  
 
-                                    <div class="form-group">
-                                        <div class="g-recaptcha" data-sitekey="6Le0jrkZAAAAANa3Yq5XfzHC4h34e4K6ynXOhlHK">
-                                            <Recaptcha/>
-                                        </div>
-                                    </div>
                                     <script type="text/javascript"src="https://www.google.com/recaptcha/api.js?hl=en"></script>
                                     {error && <p style={{ color: 'red' }}>{error}</p>}
                                     <button class="w-100 btn btn-lg btn-primary" type="submit" onClick={handleSubmit}>Sign in</button>
                             </form>
+                            <br/>          
 
                             <div class="mt5">
-                                <a>Forgot password?</a>
+                               <a>Forgot password?</a>
                             </div>
                             <div class="mt20">You don't have an account? &nbsp; 
                                 <Link to="/signup">Sign up</Link> 

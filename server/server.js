@@ -21,7 +21,6 @@ const pool = new Pool({
 });
 
 app.get("/api", (req, res) => {
-//        res.json({"users": ["userOne", "userTwo", "userThree"]})
 
 
     // Connexion à la base de données et exécution de la requête
@@ -52,7 +51,7 @@ app.post('/login', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM utilisateur WHERE email = $1', [email]);
         if (result.rows.length === 0) {
-            return res.status(401).json({ message: 'Email non trouvé' });
+            return res.status(401).json({ message: 'Utilisateur non trouvé' });
         }
 
         const user = result.rows[0];

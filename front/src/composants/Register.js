@@ -33,7 +33,12 @@ function Register () {
         e.preventDefault();
 
         if (formData.password !== formData.retype_password) {
-            setError("Les mots de passe ne correspondent pas");
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Les mots de passe ne correspondent pas',
+                confirmButtonText: 'OK'
+            });
             return;
         }
 
@@ -66,6 +71,7 @@ function Register () {
                 // Redirigez l'utilisateur vers la page de connexion ou autre
             } else {
                 setError(data.error || "Une erreur s'est produite");
+                
             }
         } catch (error) {
             console.error('Erreur:', error);
@@ -94,7 +100,7 @@ function Register () {
                         <div class="form-group">
                             <label for="name" class="col-md-12">First name</label>                
                             <div class="col-md-12">
-                                <input type="text" name="prenom" id="prenom" value={formData.prenom} onChange={handleChange} class="form-control" autofocus="" data-rule-required="" data-msg-required="This field is required."/>
+                                <input type="text" name="prenom" id="prenom" value={formData.prenom} onChange={handleChange} class="form-control" autofocus="" required data-msg-required="This field is required."/>
                             </div>
                         
                         </div>
@@ -102,7 +108,7 @@ function Register () {
                         <div class="form-group">
                             <label for="last_name" class="col-md-12">Last name</label>
                             <div class="col-md-12">
-                                <input type="text" name="nom" id="nom" value={formData.nom} onChange={handleChange} class="form-control" data-rule-required="" data-msg-required="This field is required."/>
+                                <input type="text" name="nom" id="nom" value={formData.nom} onChange={handleChange} required class="form-control" data-msg-required="This field is required."/>
                             </div>
                         </div>
                             <input type='hidden'></input>  
@@ -122,35 +128,29 @@ function Register () {
                         <div class="form-group company-name-section">
                             <label for="company_name" class="col-md-12">Company name</label>
                             <div class="col-md-12">
-                                <input type="text" name="company" id="company" value={formData.company} onChange={handleChange} class="form-control"/>
+                                <input type="text" name="company" required id="company" value={formData.company} onChange={handleChange} class="form-control"/>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="email" class="col-md-12">Email</label>
                             <div class="col-md-12">
-                                <input type="text" name="email" id="email" value={formData.email} onChange={handleChange} class="form-control" data-rule-email="" data-msg-email="Please enter a valid email address." data-rule-required="" data-msg-required="This field is required."/>
+                                <input type="text" name="email" id="email" required value={formData.email} onChange={handleChange} class="form-control" data-rule-email="" data-msg-email="Please enter a valid email address." data-msg-required="This field is required."/>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="password" class="col-md-12">Password</label>
                             <div class="col-md-12">
-                                <input type="password" name="password" id="password" value={formData.password} onChange={handleChange}  class="form-control" data-rule-required="" data-msg-required="This field is required." data-rule-minlength="6" data-msg-minlength="Please enter at least 6 characters." autocomplete="off" style={{ zIndex: 'auto' }} />
+                                <input type="password" name="password" required id="password" value={formData.password} onChange={handleChange}  class="form-control" data-rule-required="" data-msg-required="This field is required." data-rule-minlength="6" data-msg-minlength="Please enter at least 6 characters." autocomplete="off" style={{ zIndex: 'auto' }} />
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="retype_password" class="col-md-12">Retype password</label>
                             <div class="col-md-12">
-                                <input type="password" name="retype_password" id="retype_password" value={formData.retype_password} onChange={handleChange} class="form-control" data-rule-equalto="#password"  autocomplete="off" style={{ zIndex: 'auto' }}  data-msg-equalto="Please enter the same value again."/>
+                                <input type="password" name="retype_password" required id="retype_password" value={formData.retype_password} onChange={handleChange} class="form-control" data-rule-equalto="#password"  autocomplete="off" style={{ zIndex: 'auto' }}  data-msg-equalto="Please enter the same value again."/>
                             </div>
                         </div>
-
-
-                        <div class="form-group">
-                            <div class="g-recaptcha" data-sitekey="6Le0jrkZAAAAANa3Yq5XfzHC4h34e4K6ynXOhlHK">
-                                <Recaptcha/>
-                            </div>
-                        </div>
+                       
                         <script type="text/javascript"src="https://www.google.com/recaptcha/api.js?hl=en"></script>
 
                         <div class="form-group">
