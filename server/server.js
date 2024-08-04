@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const passport = require('./passport-config'); // Importez votre configuration passport
 require('dotenv').config();
 const { Pool } = require('pg');
 const cors = require('cors');
@@ -7,7 +8,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(passport.initialize());
 const PORT = process.env.PORT || 5000;
 const SECRET_KEY = 'test';
 
@@ -19,37 +20,31 @@ const pool = new Pool({
     port: 5432,
 });
 
-pool.connect((err, client, release) => {
-    if (err) {
-        return console.error('Erreur de connexion à la base de données', err.stack);
-    }
-    console.log('Connexion réussie à PostgreSQL');
-    client.query('SELECT * FROM utilisateur', (err, result) => {
-        release();
+app.get("/api", (req, res) => {
+//        res.json({"users": ["userOne", "userTwo", "userThree"]})
+
+
+    // Connexion à la base de données et exécution de la requête
+    pool.connect((err, client, release) => {
         if (err) {
-            return console.error('Erreur lors de l\'exécution de la requête', err.stack);
+            console.error('Erreur de connexion à la base de données', err.stack);
+            return res.status(500).send('Erreur de connexion à la base de données');
         }
-        console.log('Données de la table:', result.rows);
+
+        client.query('SELECT * FROM utilisateur', (err, result) => {
+            release();  // Libérer le client de la connexion
+
+            if (err) {
+                console.error('Erreur lors de l\'exécution de la requête', err.stack);
+                return res.status(500).send('Erreur lors de l\'exécution de la requête');
+            }
+
+            // Envoyer les données comme réponse JSON
+            res.json(result.rows);
+        });
     });
 });
 
-app.get("/api", (req, res) => {
-    res.send('Bienvenue sur la page d\'accueil de mon serveur');
-});
-
-app.post('/register', async (req, res) => {
-    const { email, nom, prenom, password, type, company } = req.body;
-
-    try {
-        const result = await pool.query(
-            'INSERT INTO utilisateur (email, nom, prenom, password, type, company) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [email, nom, prenom, password, type, company] // On enregistre le mot de passe tel quel
-        );
-        res.status(201).json({ message: 'Utilisateur créé avec succès' });
-    } catch (error) {
-        res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur' });
-    }
-});
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -67,13 +62,33 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Mot de passe incorrect' });
         }
 
-        const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ token });
+        const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: '1h' });
+        res.json({ token, nom: user.nom, prenom: user.prenom });
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ message: 'Erreur du serveur' });
     }
 });
+
+
+app.post('/register', async (req, res) => {
+    const { email, nom, prenom, password, type, company } = req.body;
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO utilisateur (email, nom, prenom, password, type, company) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [email, nom, prenom, password, type, company] // On enregistre le mot de passe tel quel
+        );
+        res.status(201).json({ message: 'Utilisateur créé avec succès' });
+    } catch (error) {
+        console.error('Erreur lors de la création de l\'utilisateur:', error.message);
+
+        res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur' });
+    }
+});
+
+
+
 
 app.listen(PORT, () => { 
     console.log(`Serveur démarré sur le port ${PORT}`);

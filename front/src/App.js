@@ -15,11 +15,11 @@ import Messages from './composants/Admin/Messages';
 import Tickets from './composants/Admin/Tickets';
 import Expenses from './composants/Admin/Expenses';
 import Subscriptions from './composants/Admin/Subscriptions';
-
+import { useState,useEffect } from 'react';
 import $ from 'jquery';
 
 function App() {
- /* const [backendData, setBackendData] = useState([{}]);
+  const [backendData, setBackendData] = useState([{}]);
 
   useEffect(() => {
     fetch("/api").then(
@@ -30,7 +30,7 @@ function App() {
       }
     );
   }, []);
-*/
+
   return (
     <div>
       <Router>

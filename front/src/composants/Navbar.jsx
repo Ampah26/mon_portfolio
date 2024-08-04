@@ -1,9 +1,23 @@
 import React from 'react';
 import Login from './Login';
+import { loginUser } from './Admin/authService';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const handleLogout = () => {
+
+    const confirmed = window.confirm("Êtes-vous sûr de vouloir vous déconnecter ?");
+    if (confirmed) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('nom');
+        localStorage.removeItem('prenom');
+    }
+}; 
 
 const Navbar = () => {
+    const location= useLocation()
     const nom = localStorage.getItem('nom');
     const prenom = localStorage.getItem('prenom');
+ 
 
 return (
     <div>
@@ -139,8 +153,9 @@ return (
                                     </li>
                                 
                                     <li class="dropdown-divider"></li>
+
                                     <li>
-                                        <a href="/" class="dropdown-item">
+                                        <a href="/" class="dropdown-item" onClick={handleLogout}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out icon-16 me-2">
                                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -148,7 +163,8 @@ return (
                                             </svg>
                                             Sign Out
                                         </a>
-                                    </li>
+                                    </li> 
+                                    
                                 </ul>
                             </li>
                         </ul>
