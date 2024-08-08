@@ -1,20 +1,52 @@
 import React, { useState ,useEffect} from 'react';
-import { Link } from 'react-router-dom';
+import Navbar from './Navbar';
+import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
+    const [isSalesExpanded, setIsSalesExpanded] = useState(false);
+    const [isProspectsExpanded, setIsProspectsExpanded] = useState(false);
+    const location = useLocation(); // React Router hook to access the current location
     const [activeItem, setActiveItem] = useState('');
 
-    const handleClick = (event, item, path) => {
-        event.preventDefault(); // Empêche le rechargement complet de la page
+    useEffect(() => {
+        // Set the active item based on the current location path
+        const currentPath = location.pathname.split('/')[1]; // Get the first segment of the path
+        setActiveItem(currentPath);
+    }, [location]);
+
+    const handleClick = (item) => {
         setActiveItem(item);
-        window.history.pushState({}, '', path); // Met à jour l'URL sans recharger la page
-        window.dispatchEvent(new PopStateEvent('popstate'));
     };
+
+    const toggleSalesMenu = () => {
+        setIsSalesExpanded(!isSalesExpanded);
+      };
     
+      const toggleProspectsMenu = () => {
+        setIsProspectsExpanded(!isProspectsExpanded);
+      };
+
+
+      const [isSidebarToggled, setIsSidebarToggled] = useState(false);  // État pour gérer la classe `sidebar-toggled`
+
+      useEffect(() => {
+          // Mettez à jour la classe du body lorsque isSidebarToggled change
+          if (isSidebarToggled) {
+              document.body.classList.add('sidebar-toggled');
+          } else {
+              document.body.classList.remove('sidebar-toggled');
+          }
+      }, [isSidebarToggled]);
+  
+      const toggleSidebar = () => {
+          setIsSidebarToggled(!isSidebarToggled);  // Basculer la barre latérale
+      };
+
+
 return (
 
-        <div class="sidebar sidebar-off">
-            <a class="sidebar-toggle-btn hide" href="#">
+        <div className='sidebar sidebar-off'>
+            <a class="sidebar-toggle-btn hide">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu icon mt-1 text-off"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </a>
             <a class="sidebar-brand brand-logo" href="https://rise.fairsketch.com/dashboard/view/2">
@@ -26,15 +58,15 @@ return (
             <div class="sidebar-scroll" style={{ height: '723px', position: 'relative', overflowY: 'scroll' }}>
                 
                 <ul id="sidebar-menu" class="sidebar-menu">
-                    <li class='active main' >
-                        <a href="/admin.dashboard">
+                    <li class={activeItem === 'admin.dashboard' ? 'active main' : 'main'} >
+                        <Link to="/admin.dashboard" onClick={() => handleClick('admin.dashboard')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor icon"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                            <span class="menu-text dashboard-menu"> Dashboard</span>
-                        </a>
+                            <span class='menu-texthidden' > Dashboard</span>
+                        </Link>
                     </li>
 
-                    <li class={activeItem === 'events' ? 'active main' : 'main'}>
-                        <Link to="/admin.events" onClick={() => handleClick('events')}>
+                    <li class={activeItem === 'admin.events' ? 'active main' : 'main'}>
+                        <Link to="/admin.events" onClick={() => handleClick('admin.events')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar icon">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                 <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -45,95 +77,129 @@ return (
                         </Link>
                     </li>
 
-                    <li class={activeItem === 'client' ? 'active main' : 'main'}>
-                        <a href="admin.clients" onClick={() => handleClick('admin.client')}>
+                    <li class= {activeItem === 'admin.clients' ? 'active main' : 'main'}>
+                        <Link to="/admin.clients" onClick={() => handleClick('admin.clients')} >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase icon">
                                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                             </svg>
                             <span class="menu-text ">Clients</span>
-                        </a>
+                        </Link>
                     </li>
 
-                    <li class="   main">
-                        <a href="admin.projects">
+                    <li class={activeItem === 'admin.projects' ? 'active main' : 'main'}>
+                        <Link to="/admin.projects" onClick={() => handleClick('admin.projects')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-command icon"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></svg>
                             <span class="menu-text ">Projects</span>
-                        </a>
+                        </Link>
                     </li>
-                    <li class="    main">
-                        <a href='admin.tasks'>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                            <span class="menu-text ">Tasks</span>
-                        </a>
+                    <li class={activeItem === 'admin.tasks' ? 'active main' : 'main'}>
+                        <Link to="/admin.tasks" onClick={() => handleClick('admin.tasks')}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle icon">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <span class="menu-text">Tasks</span>
+                        </Link>
                     </li>
-                    <li class="    main">
-                        <a href='admin.leads'>
+                    <li class={activeItem === 'admin.leads' ? 'active main' : 'main'}>
+                        <Link to="/admin.leads" onClick={() => handleClick('admin.leads')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers icon"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                             <span class="menu-text ">Leads</span>
-                        </a>
+                        </Link>
                     </li>
-                    <li class="    main">
-                        <a href="admin.subscriptions">
+                    <li class={activeItem === 'admin.subscriptions' ? 'active main' : 'main'}>
+                        <Link to="/admin.subscriptions" onClick={() => handleClick('admin.subscriptions')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-repeat icon"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
                             <span class="menu-text ">Subscriptions</span>
-                        </a>
+                        </Link>
                     </li>
                     
-                    <li class="expand main">
-                        <a>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart icon">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <span class="menu-text ">Sales</span>
+                    <li className="expand main">
+                        <a onClick={toggleSalesMenu}>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="feather feather-shopping-cart icon"
+                        >
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span className="menu-text">Sales</span>
                         </a>
-                        <ul>
-                            <li>
-                                <a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus">
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                    <span>Invoices</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus">
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                    <span>Orders list</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                    <span>Store</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                    <span>Payments</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus">
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                    <span>Items</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus">
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                    <span>Contracts</span>
-                                </a>
-                            </li>
+                        <ul style={{ display: isSalesExpanded ? 'block' : 'none' }}>
+                        <li>
+                            <a>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="feather feather-minus"
+                            >
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Invoices</span>
+                            </a>
+                        </li>
+                        {/* ... autres éléments du sous-menu Sales ... */}
+                        </ul>
+                    </li>
+                    
+                    <li className="expand main">
+                        <a onClick={toggleProspectsMenu}>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="feather feather-anchor icon"
+                        >
+                            <circle cx="12" cy="5" r="3"></circle>
+                            <line x1="12" y1="22" x2="12" y2="8"></line>
+                            <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
+                        </svg>
+                        <span className="menu-text">Prospects</span>
+                        </a>
+                        <ul style={{ display: isProspectsExpanded ? 'block' : 'none' }}>
+                        <li>
+                            <a href="https://rise.fairsketch.com/estimates">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="feather feather-minus"
+                            >
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Estimate List</span>
+                            </a>
+                        </li>
+                        {/* ... autres éléments du sous-menu Prospects ... */}
                         </ul>
                     </li>
                     <li class="expand main">

@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 
-const Navbar = () => {
+const Navbar = ({ toggleSidebar }) => {
     const location= useLocation()
         const navigate = useNavigate();
 

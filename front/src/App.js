@@ -17,6 +17,8 @@ import Expenses from './composants/Admin/Expenses';
 import Subscriptions from './composants/Admin/Subscriptions';
 import { useState,useEffect } from 'react';
 import $ from 'jquery';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   const [backendData, setBackendData] = useState([{}]);
@@ -31,10 +33,27 @@ function App() {
     );
   }, []);
 
+
+  const [isSidebarToggled, setIsSidebarToggled] = useState(false);  // État pour gérer la classe `sidebar-toggled`
+
+  useEffect(() => {
+      // Mettez à jour la classe du body lorsque isSidebarToggled change
+      if (isSidebarToggled) {
+          document.body.classList.add('sidebar-toggled');
+      } else {
+          document.body.classList.remove('sidebar-toggled');
+      }
+  }, [isSidebarToggled]);
+
+  const toggleSidebar = () => {
+      setIsSidebarToggled(!isSidebarToggled);  // Basculer la barre latérale
+  };
+
   return (
     <div>
       <Router>
         <Routes>
+
           <Route path="/" element={<Login />} />
           <Route path='/admin.dashboard' element={<Dashboard />}/>
           <Route path='/admin.events' element={<Events />}/>

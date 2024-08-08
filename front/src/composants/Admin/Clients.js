@@ -3,24 +3,93 @@ import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import $ from 'jquery';
 import 'feather-icons';
+import axios from 'axios'
+import AddClientModal from '../Modal/AddClientModal';
+import withReactContent from 'sweetalert2-react-content';
+import DeleteClientButton from '../Modal/DeleteClientButton';
+import handleDelete from '../Modal/DeleteClientButton'
+import Swal from 'sweetalert2';
 
-const clients = [
-  {
-    id: 1,
-    name: "Demo Client",
-    contact: { name: "Emily Smith", avatar: "https://rise.fairsketch.com/files/profile_images/_file62ad955b55c00-avatar.png", url: "https://rise.fairsketch.com/clients/contact_profile/107" },
-    phone: "662-709-5341",
-    clientGroups: ["VIP"],
-    label: { name: "Corporate", color: "#dbadff" },
-    projects: 3,
-    totalInvoiced: "$9,276.00",
-    paymentReceived: "$9,000.00",
-    due: "$276.00"
-  },
- 
-];
 
-function Clients () {
+const MySwal = withReactContent(Swal);
+
+
+
+
+const Clients = ({ client }) =>  {
+    
+    
+
+    const [showModal, setShowModal] = useState(false);
+
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+    const [clients, setClients] = useState([]);
+
+    useEffect(() => {
+        // Fonction pour récupérer les données des clients depuis le backend
+        const fetchClients = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/clients'); // Assurez-vous que l'URL correspond à votre route backend
+                const data = await response.json();
+                setClients(data);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des clients:', error);
+            }
+        };
+
+        fetchClients();
+    }, []);
+
+    const getLabelClass = (label) => {
+        switch (label) {
+            case 'Corporate':
+                return 'label-corporate';
+            case 'Unsatisfied':
+                return 'label-unsatisfied';
+            case 'Referral':
+                return 'label-referral';
+            case 'Inactive':
+                return 'label-inactive';
+            case 'Potential':
+                return 'label-potential';
+            default:
+                return '';
+        }
+    };
+
+
+    const handleDelete = async () => {
+        const result = await MySwal.fire({
+          title: 'Êtes-vous sûr ?',
+          text: "Vous ne pourrez pas récupérer ce client !",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Oui, supprimer !',
+          cancelButtonText: 'Annuler'
+        });
+    
+        if (result.isConfirmed) {
+          try {
+            await axios.delete(`http://localhost:5000/api/clients/delete/${client.id}`);
+            MySwal.fire(
+              'Supprimé !',
+              'Le client a été supprimé.',
+              'success'
+            );
+            // Si nécessaire, rafraîchissez la liste des clients après suppression
+          } catch (error) {
+            MySwal.fire(
+              'Erreur !',
+              'Une erreur est survenue lors de la suppression du client.',
+              'error'
+            );
+          }
+        }
+      };
+    
     
     return (
         <div>
@@ -36,40 +105,39 @@ function Clients () {
             <div id="left-menu-toggle-mask">
                 <Sidebar/>
                 <div class="page-container overflow-auto">
-                    <div class="main-scrollable-page scrollable-page" style={{height: '638px', position: 'relative', overflowy: 'scroll'}}>
+                    <div class="main-scrollable-page scrollable-page" style={{height: '638px', position: 'relative', overflowY: 'scroll'}}>
                         <div id="page-content" class="page-wrapper clearfix" style={{minHeight: '588px'}}>
                             <div class="clearfix grid-button">
                                 <ul id="client-tabs" data-bs-toggle="ajax-tab" class="nav nav-tabs bg-white title" role="tablist">
                                     <li>
-                                    <a
-                                        role="presentation"
-                                        data-bs-toggle="tab"
-                                        href="javascript:;"
-                                        data-bs-target="#overview"
-                                        aria-selected="false"
-                                        tabIndex="-1"
-                                    >
-                                        Overview
-                                    </a>
+                                        <a
+                                            role="presentation"
+                                            data-bs-toggle="tab"
+                                            href="javascript:;"
+                                            data-bs-target="#overview"
+                                            aria-selected="false"
+                                            tabIndex="-1"
+                                        >
+                                            Overview
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            role="presentation"
+                                            data-bs-toggle="tab"
+                                            href="https://rise.fairsketch.com/clients/clients_list/"
+                                            data-bs-target="#clients_list"
+                                            aria-selected="false"
+                                            tabIndex="-1"
+                                            class="active show"
+                                        >
+                                            Clients
+                                        </a>
                                     </li>
                                     <li>
                                     <a
                                         role="presentation"
                                         data-bs-toggle="tab"
-                                        href="https://rise.fairsketch.com/clients/clients_list/"
-                                        data-bs-target="#clients_list"
-                                        aria-selected="false"
-                                        tabIndex="-1"
-                                        class="active show"
-                                    >
-                                        Clients
-                                    </a>
-                                    </li>
-                                    <li>
-                                    <a
-                                        role="presentation"
-                                        data-bs-toggle="tab"
-                                        href="https://rise.fairsketch.com/clients/contacts/"
                                         data-bs-target="#contacts"
                                         aria-selected="false"
                                         tabIndex="-1"
@@ -78,112 +146,150 @@ function Clients () {
                                     </a>
                                     </li>
                                     <div class="tab-title clearfix no-border">
-                                    <div class="title-button-group">
-                                        <a
-                                        
-                                        class="btn btn-outline-light"
-                                        title="Manage labels"
-                                        data-post-type="client"
-                                        data-act="ajax-modal"
-                                        data-title="Manage labels"
-                                        data-action-url="https://rise.fairsketch.com/labels/modal_form"
-                                        >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            class="feather feather-tag icon-16"
-                                        >
-                                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                                        </svg>
-                                        Manage labels
-                                        </a>
-                                        <a
-                                        
-                                        class="btn btn-default"
-                                        title="Import clients"
-                                        id="import-btn"
-                                        data-act="ajax-modal"
-                                        data-title="Import clients"
-                                        data-action-url="https://rise.fairsketch.com/clients/import_clients_modal_form"
-                                        >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            class="feather feather-upload icon-16"
-                                        >
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                        Import clients
-                                        </a>
-                                        <a
-                                        
-                                        class="btn btn-default"
-                                        title="Add client"
-                                        data-act="ajax-modal"
-                                        data-title="Add client"
-                                        data-action-url="https://rise.fairsketch.com/clients/modal_form"
-                                        >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            class="feather feather-plus-circle icon-16"
-                                        >
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <line x1="12" y1="8" x2="12" y2="16"></line>
-                                            <line x1="8" y1="12" x2="16" y2="12"></line>
-                                        </svg>
-                                        Add client
-                                        </a>
-                                    </div>
+                                        <div class="title-button-group">
+                                            <a
+                                            
+                                            class="btn btn-outline-light"
+                                            title="Manage labels"
+                                            data-post-type="client"
+                                            data-act="ajax-modal"
+                                            data-title="Manage labels"
+                                            >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                class="feather feather-tag icon-16"
+                                            >
+                                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                            </svg>
+                                            Manage labels
+                                            </a>
+                                            <a
+                                            
+                                            class="btn btn-default"
+                                            title="Import clients"
+                                            id="import-btn"
+                                            data-act="ajax-modal"
+                                            data-title="Import clients"
+                                            >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                class="feather feather-upload icon-16"
+                                            >
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="17 8 12 3 7 8"></polyline>
+                                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                                            </svg>
+                                            Import clients
+                                            </a>
+                                            <a
+                                            
+                                            class="btn btn-default"
+                                            title="Add client"
+                                            data-act="ajax-modal"
+                                            data-title="Add client"
+                                            onClick={handleShowModal}
+                                            >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                class="feather feather-plus-circle icon-16"
+                                            >
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                                            </svg>
+                                            Add client
+                                            </a>
+                                            <AddClientModal show={showModal} handleClose={handleCloseModal} />
+
+                                        </div>
                                     </div>
                                 </ul>
                                 <div class="tab-content">
                                     <div role="tabpanel" class="tab-pane fade" id="overview">
                                         <div class="mt20">
                                             <div class="row">
-                                            <div class="col-md-3">
-                                                <a href="https://rise.fairsketch.com/clients/index/clients_list#all_clients" class="white-link">
-                                                <div class="card dashboard-icon-widget">
-                                                    <div class="card-body">
-                                                    <div class="widget-icon bg-primary">
-                                                        {/* SVG for briefcase icon */}
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-briefcase icon">
-                                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                                                        </svg>
+                                                <div class="col-md-3">
+                                                    <a href="https://rise.fairsketch.com/clients/index/clients_list#all_clients" class="white-link">
+                                                    <div class="card dashboard-icon-widget">
+                                                        <div class="card-body">
+                                                        <div class="widget-icon bg-primary">
+                                                            {/* SVG for briefcase icon */}
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-briefcase icon">
+                                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="widget-details">
+                                                            <h1>51</h1>
+                                                            <span class="bg-transparent-white">Total clients</span>
+                                                        </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="widget-details">
-                                                        <h1>51</h1>
-                                                        <span class="bg-transparent-white">Total clients</span>
-                                                    </div>
-                                                    </div>
+                                                    </a>
                                                 </div>
-                                                </a>
-                                            </div>
+                                                <div className="col-md-3">
+                                                    <a href="https://rise.fairsketch.com/clients/index/contacts" className="white-link">
+                                                        <div className="card dashboard-icon-widget">
+                                                            <div className="card-body">
+                                                                <div className="widget-icon bg-orange">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-users icon">
+                                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                                        <circle cx="9" cy="7" r="4"></circle>
+                                                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                                    </svg>
+                                                                </div>
+                                                                <div className="widget-details">
+                                                                    <h1>50</h1>
+                                                                    <span className="bg-transparent-white">Total contacts</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div className="col-md-3">
+                                                    <a className="contact-widget-link" data-filter="logged_in_today" href="https://rise.fairsketch.com/clients/index/clients_list#logged_in_today">
+                                                        <div className="card dashboard-icon-widget">
+                                                            <div className="card-body">
+                                                                <div className="widget-icon bg-primary">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check-square icon">
+                                                                        <polyline points="9 11 12 14 22 4"></polyline>
+                                                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                                                    </svg>
+                                                                </div>
+                                                                <div className="widget-details">
+                                                                    <h1>1</h1>
+                                                                    <span className="bg-transparent-white">Contacts logged in today</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
                                             {/* ... other similar blocks for "Total contacts", "Contacts logged in today", etc. */}
                                             </div>
                                             
@@ -369,10 +475,10 @@ function Clients () {
                                                             </div>
                                                             <div className="filter-item-box">
                                                                 <button className="btn btn-default show-filter-form-button" type="button">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus icon-16">
-                                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                                </svg>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus icon-16">
+                                                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                    </svg>
                                                                 </button>
                                                             </div>
                                                             {/* Bookmarked filters */}
@@ -412,74 +518,66 @@ function Clients () {
                                                     <table id="client-table" className="display dataTable no-footer" cellSpacing="0" width="100%" role="grid" aria-describedby="client-table_info">
                                                         <thead>
                                                             <tr role="row">
-                                                            <th className="text-center w50 all sorting_asc" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-sort="ascending" aria-label="ID: activate to sort column descending">ID</th>
-                                                            <th className="all sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Name: activate to sort column ascending">Name</th>
-                                                            <th className="sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Primary contact: activate to sort column ascending">Primary contact</th>
-                                                            <th className="sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Phone: activate to sort column ascending">Phone</th>
-                                                            <th className="sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Client groups: activate to sort column ascending">Client groups</th>
-                                                            <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Labels">Labels</th>
-                                                            <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Projects">Projects</th>
-                                                            <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Total invoiced">Total invoiced</th>
-                                                            <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Payment Received">Payment Received</th>
-                                                            <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Due">Due</th>
-                                                            <th className="text-center option w100 sorting_disabled" rowSpan="1" colSpan="1" aria-label="">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-menu icon-16">
-                                                                <line x1="3" y1="12" x2="21" y2="12"></line>
-                                                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                                                <line x1="3" y1="18" x2="21" y2="18"></line>
-                                                                </svg>
-                                                            </th>
+                                                                <th className="text-center w50 all sorting_asc" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-sort="ascending" aria-label="ID: activate to sort column descending">ID</th>
+                                                                <th className="all sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Name: activate to sort column ascending">Name</th>
+                                                                <th className="sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Primary contact: activate to sort column ascending">Primary contact</th>
+                                                                <th className="sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Phone: activate to sort column ascending">Phone</th>
+                                                                <th className="sorting" tabIndex="0" aria-controls="client-table" rowSpan="1" colSpan="1" aria-label="Client groups: activate to sort column ascending">Client groups</th>
+                                                                <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Labels">Labels</th>
+                                                                <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Projects">Projects</th>
+                                                                <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Total invoiced">Total invoiced</th>
+                                                                <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Payment Received">Payment Received</th>
+                                                                <th className="sorting_disabled" rowSpan="1" colSpan="1" aria-label="Due">Due</th>
+                                                                <th className="text-center option w100 sorting_disabled" rowSpan="1" colSpan="1" aria-label="">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-menu icon-16">
+                                                                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                                                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                                                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                                                                    </svg>
+                                                                </th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {clients.map((client, index) => (
-                                                            <tr key={client.id} className={index % 2 === 0 ? "even" : "odd"}>
-                                                                <td className="text-center w50 all">{client.id}</td>
-                                                                <td className="all">
-                                                                <a href={`https://rise.fairsketch.com/clients/view/${client.id}`}>{client.name}</a>
-                                                                </td>
-                                                                <td>
-                                                                <a href={client.contact.url}>
-                                                                    <span className="avatar avatar-xs mr10">
-                                                                    <img src={client.contact.avatar} alt={client.contact.name} />
-                                                                    </span>
-                                                                    {client.contact.name}
-                                                                </a>
-                                                                </td>
-                                                                <td>{client.phone}</td>
-                                                                <td>
-                                                                <ul className="pl15">
-                                                                    {client.clientGroups.map((group, i) => (
-                                                                    <li key={i}>{group}</li>
-                                                                    ))}
-                                                                </ul>
-                                                                </td>
-                                                                <td>
-                                                                <span className="mt0 badge clickable" style={{ backgroundColor: client.label.color }} title="Label">{client.label.name}</span>
-                                                                </td>
-                                                                <td>{client.projects}</td>
-                                                                <td>{client.totalInvoiced}</td>
-                                                                <td>{client.paymentReceived}</td>
-                                                                <td>{client.due}</td>
-                                                                <td className="text-center option w100">
-                                                                <a  className="edit" title="Edit client" data-post-id={client.id} data-act="ajax-modal" data-title="Edit client" data-action-url={`https://rise.fairsketch.com/clients/modal_form`}>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-edit icon-16">
-                                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                                                    </svg>
-                                                                </a>
-                                                                <a  title="Delete client" className="delete" data-id={client.id} data-action-url="https://rise.fairsketch.com/clients/delete" data-action="delete-confirmation">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x icon-16">
-                                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                                    </svg>
-                                                                </a>
-                                                                </td>
-                                                            </tr>
+                                                                <tr key={client.id} className={index % 2 === 0 ? "even" : "odd"}>
+                                                                    <td className="text-center w50 all" style={{backgroundColor: '#f4f4f4'}}>{client.id}</td>
+                                                                    <td className="all" style={{backgroundColor: '#f4f4f4'}}>{client.name}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.primary_contact}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.phone}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.client_group}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>
+                                                                        <span className={`label ${getLabelClass(client.labels)}`} title="Label">{client.labels}</span>
+                                                                    </td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.projects}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.total_invoiced}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.payment_received}</td>
+                                                                    <td style={{backgroundColor: '#f4f4f4'}}>{client.due}</td>
+                                                                    <td className="text-center option w100" style={{backgroundColor: '#f4f4f4'}}>
+                                                                        <a className="edit" title="Edit client" data-post-id={client.id} data-act="ajax-modal" data-title="Edit client" data-action-url={`http://localhost:5000/api/clients/edit/${client.id}`}>
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-edit icon-16">
+                                                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                                            </svg>
+                                                                        </a>
+                                                                        <a
+                                                                            title="Supprimer le client"
+                                                                            className="delete"
+                                                                            onClick={() => {
+                                                                                console.log('Client ID à supprimer:', client.id); // Ajoutez ce log pour vérifier
+                                                                                handleDelete(client);
+                                                                            }}
+                                                                            style={{ cursor: 'pointer' }}
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x icon-16">
+                                                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                                            </svg>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
                                                             ))}
                                                         </tbody>
                                                     </table>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -487,7 +585,6 @@ function Clients () {
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
@@ -525,7 +622,7 @@ function Clients () {
             
         </div>
 
-    )
-}
+    );
+};
 
-export default Clients
+export default Clients;

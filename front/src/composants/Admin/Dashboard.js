@@ -27,10 +27,23 @@ const projects = [
 
 const Dashboard = () => {
   
-   
+    const [isSidebarToggled, setIsSidebarToggled] = useState(false);  // État pour gérer la classe `sidebar-toggled`
+
+    useEffect(() => {
+        // Mettez à jour la classe du body lorsque isSidebarToggled change
+        if (isSidebarToggled) {
+            document.body.classList.add('sidebar-toggled');
+        } else {
+            document.body.classList.remove('sidebar-toggled');
+        }
+    }, [isSidebarToggled]);
+
+    const toggleSidebar = () => {
+        setIsSidebarToggled(!isSidebarToggled);  // Basculer la barre latérale
+    };
     return (
         <div>
-            <Navbar />
+            <Navbar toggleSidebar={toggleSidebar}  />
             <div id="left-menu-toggle-mask">
                 <Sidebar/>
                 <div class="page-container overflow-auto">
@@ -280,103 +293,151 @@ const Dashboard = () => {
                                             <div class="card-header">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text icon-16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> &nbsp;Invoice Overview
                                             </div>
+                                            
+                                            <div
+                                                className="card-body rounded-bottom"
+                                                id="invoice-overview-container"
+                                                style={{ height: "327px", position: "relative", overflowY: "scroll" }}
+                                            >
+                                                <a data-filter="overdue" className="text-default">
+                                                    <div className="d-flex p-2">
+                                                        <div className="w40p text-truncate">
+                                                            <div style={{ backgroundColor: "#F5325C" }} className="color-tag border-circle wh10"></div>
+                                                            <span >Overdue</span>
+                                                        </div>
+                                                        <div className="w20p">
+                                                            <div className="progress widget-progress-bar" title="23%">
+                                                                <div
+                                                                    className="progress-bar bg-danger"
+                                                                    role="progressbar"
+                                                                    style={{ width: "23%" }}
+                                                                    aria-valuenow="23%"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="100"
+                                                                ></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w15p text-center" >6</div>
+                                                        <div className="w25p text-end" >$2,772.50</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#not_paid" data-filter="not_paid" className="text-default">
+                                                    <div className="d-flex p-2" >
+                                                        <div className="w40p text-truncate">
+                                                            <div style={{ backgroundColor: "#FAC108" }} className="color-tag border-circle wh10"></div>
+                                                            <span >Not paid</span>
+                                                        </div>
+                                                        <div className="w20p">
+                                                            <div className="progress widget-progress-bar" title="23%">
+                                                                <div
+                                                                    className="progress-bar bg-orange"
+                                                                    role="progressbar"
+                                                                    style={{ width: "23%" }}
+                                                                    aria-valuenow="23%"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="100"
+                                                                ></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w15p text-center" >6</div>
+                                                        <div className="w25p text-end" >$9,356.00</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#partially_paid" data-filter="partially_paid" className="text-default">
+                                                    <div className="d-flex p-2" >
+                                                        <div className="w40p text-truncate">
+                                                            <div style={{ backgroundColor: "#6690F4" }} className="color-tag border-circle wh10"></div>
+                                                            <span >Partially paid</span>
+                                                        </div>
+                                                        <div className="w20p">
+                                                            <div className="progress widget-progress-bar" title="35%">
+                                                                <div
+                                                                    className="progress-bar"
+                                                                    role="progressbar"
+                                                                    style={{ width: "35%", backgroundColor: "#6690F4" }}
+                                                                    aria-valuenow="35%"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="100"
+                                                                ></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w15p text-center" >9</div>
+                                                        <div className="w25p text-end" >$10,720.00</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#fully_paid" data-filter="fully_paid" className="text-default">
+                                                    <div className="d-flex p-2" >
+                                                        <div className="w40p text-truncate">
+                                                            <div style={{ backgroundColor: "#485BBD" }} className="color-tag border-circle wh10"></div>
+                                                            <span >Fully paid</span>
+                                                        </div>
+                                                        <div className="w20p">
+                                                            <div className="progress widget-progress-bar" title="42%">
+                                                                <div
+                                                                    className="progress-bar"
+                                                                    role="progressbar"
+                                                                    style={{ width: "42%", backgroundColor: "#485BBD" }}
+                                                                    aria-valuenow="42%"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="100"
+                                                                ></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w15p text-center" >11</div>
+                                                        <div className="w25p text-end" >$12,470.00</div>
+                                                    </div>
+                                                </a>
+                                                <a href="https://rise.fairsketch.com/invoices/index/custom#draft" data-filter="draft" className="text-default">
+                                                    <div className="d-flex p-2" >
+                                                        <div className="w40p text-truncate">
+                                                            <div style={{ backgroundColor: "#6C757D" }} className="color-tag border-circle wh10"></div>
+                                                            <span >Draft</span>
+                                                        </div>
+                                                        <div className="w20p">
+                                                            <div className="progress widget-progress-bar" title="4%">
+                                                                <div
+                                                                    className="progress-bar bg-secondary"
+                                                                    role="progressbar"
+                                                                    style={{ width: "4%" }}
+                                                                    aria-valuenow="4"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="100"
+                                                                ></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w15p text-center" >1</div>
+                                                        <div className="w25p text-end" >$120.00</div>
+                                                    </div>
+                                                </a>
 
-                                            <div class="card-body rounded-bottom" id="invoice-overview-container" style={{height: "327px", position: "relative", overflowY: "scroll"}}>
-                                                <a href="https://rise.fairsketch.com/invoices/index/custom#overdue" data-filter="overdue" class="text-default">
-                                                    <div class="d-flex p-2">
-                                                        <div class="w40p text-truncate">
-                                                            <div style={{backgroundColor: "#F5325C"}} class="color-tag border-circle wh10"></div>
-                                                              Overdue      
-                                                        </div>
-                                                        <div class="w20p">
-                                                            <div class="progress widget-progress-bar" title="23%">
-                                                                <div class="progress-bar bg-danger" role="progressbar" style={{width: "23%"}} aria-valuenow="23%" aria-valuemin="0" aria-valuemax="100"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="w15p text-center">6</div>
-                                                        <div class="w25p text-end">$2,772.50</div>
-                                                    </div>
-                                                </a>
-                                                <a href="https://rise.fairsketch.com/invoices/index/custom#not_paid" data-filter="not_paid" class="text-default">
-                                                    <div class="d-flex p-2">
-                                                        <div class="w40p text-truncate">
-                                                            <div style={{backgroundColor: "#FAC108"}} class="color-tag border-circle wh10"></div>
-                                                            Not paid                   
-                                                        </div>
-                                                        <div class="w20p">
-                                                            <div class="progress widget-progress-bar" title="23%">
-                                                                <div class="progress-bar bg-orange" role="progressbar" style={{width: "23%"}} aria-valuenow="23%" aria-valuemin="0" aria-valuemax="100"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="w15p text-center">6</div>
-                                                        <div class="w25p text-end">$9,356.00</div>
-                                                    </div>
-                                                </a>
-                                                <a href="https://rise.fairsketch.com/invoices/index/custom#partially_paid" data-filter="partially_paid" class="text-default">
-                                                    <div class="d-flex p-2">
-                                                        <div class="w40p text-truncate">
-                                                            <div style={{backgroundColor: "#6690F4"}} class="color-tag border-circle wh10"></div>Partially paid                    </div>
-                                                        <div class="w20p">
-                                                            <div class="progress widget-progress-bar" title="35%">
-                                                                <div class="progress-bar" role="progressbar" style={{width: "35%", backgroundColor: "#6690F4"}} aria-valuenow="35%" aria-valuemin="0" aria-valuemax="100"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="w15p text-center">9</div>
-                                                        <div class="w25p text-end">$10,720.00</div>
-                                                    </div>
-                                                </a>
-                                                <a href="https://rise.fairsketch.com/invoices/index/custom#fully_paid" data-filter="fully_paid" class="text-default">
-                                                    <div class="d-flex p-2">
-                                                        <div class="w40p text-truncate">
-                                                            <div style={{backgroundColor: "#485BBD"}} class="color-tag border-circle wh10"></div>
-                                                            Fully paid                  
-                                                        </div>
-                                                        <div class="w20p">
-                                                            <div class="progress widget-progress-bar" title="42%">
-                                                                <div class="progress-bar" role="progressbar" style={{width: "42%", backgroundColor: "#485BBD"}} aria-valuenow="42%" aria-valuemin="0" aria-valuemax="100"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="w15p text-center">11</div>
-                                                        <div class="w25p text-end">$12,470.00</div>
-                                                    </div>
-                                                </a>
-                                                <a href="https://rise.fairsketch.com/invoices/index/custom#draft" data-filter="draft" class="text-default">
-                                                    <div class="d-flex p-2">
-                                                        <div class="w40p text-truncate">
-                                                            <div style={{backgroundColor: "#6C757D"}} class="color-tag border-circle wh10"></div>
-                                                            Draft                  
-                                                        </div>
-                                                        <div class="w20p">
-                                                            <div class="progress widget-progress-bar" title="4%">
-                                                                <div class="progress-bar bg-secondary" role="progressbar" style={{width: "4%"}} aria-valuenow="4" aria-valuemin="0" aria-valuemax="100"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="w15p text-center">1</div>
-                                                        <div class="w25p text-end">$120.00</div>
-                                                    </div>
-                                                </a>
+                                                <div className="widget-footer bottom-25 position-absolute w90p" >
+                                                    <div className="col-md-12">
+                                                        <div className="row">
+                                                            <div className="col-md-5 col-5 ps-4">
+                                                                <div >Total invoiced</div>
+                                                                <div className="strong" >$32,457.00</div>
 
-                                                <div class="widget-footer bottom-25 position-absolute w90p">
-                                                    <div class="col-md-12">
-                                                        <div class="row">
-                                                            <div class="col-md-5 col-5 ps-4">
-                                                                <div>Total invoiced</div>
-                                                                <div class="strong">$32,457.00</div>
-
-                                                                <div class="mt10">Due</div>
-                                                                <div class="strong ">$14,627.00</div>
+                                                                <div className="mt10" >Due</div>
+                                                                <div className="strong" >$14,627.00</div>
                                                             </div>
-                                                            <div class="col-md-7 col-7">
-                                                                <div>Last 12 months</div>
-                                                                <div class="invoice-line-chart-container">
-                                                                    <div class="chartjs-size-monitor">
-                                                                        <div class="chartjs-size-monitor-expand">
-                                                                            <div class=""></div>
-                                                                        </div><div class="chartjs-size-monitor-shrink">
-                                                                            <div class=""></div>
+                                                            <div className="col-md-7 col-7">
+                                                                <div >Last 12 months</div>
+                                                                <div className="invoice-line-chart-container">
+                                                                    <div className="chartjs-size-monitor">
+                                                                        <div className="chartjs-size-monitor-expand">
+                                                                            <div></div>
+                                                                        </div>
+                                                                        <div className="chartjs-size-monitor-shrink">
+                                                                            <div></div>
                                                                         </div>
                                                                     </div>
-                                                                    <canvas id="invoice-overview-chart" style={{width: "111px", height: "67px", display: "block" }}width="138" height="83"  class="chartjs-render-monitor"></canvas>
+                                                                    <canvas
+                                                                        id="invoice-overview-chart"
+                                                                        style={{ width: "111px", height: "67px", display: "block" }}
+                                                                        width="138"
+                                                                        height="83"
+                                                                        className="chartjs-render-monitor"
+                                                                    ></canvas>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -529,7 +590,7 @@ const Dashboard = () => {
                                             </div>
                                             <div className="position-absolute" style={{ bottom: '15px' }}>
                                                 <span className="me-5">
-                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/4/all_tasks_overview" className="text-default">
+                                                    <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/4/all_tasks_overview" className="text-default" >
                                                         <span title="Blocker ">
                                                             <svg 
                                                             xmlns="http://www.w3.org/2000/svg" 
@@ -577,7 +638,7 @@ const Dashboard = () => {
                                                 </span>
                                                 <span className="me-5">
                                                     <a href="https://rise.fairsketch.com/tasks/all_tasks/tasks_list/0/2/all_tasks_overview" className="text-default">
-                                                        <span title="Major">
+                                                        <span title="Major" >
                                                             <svg 
                                                                 xmlns="http://www.w3.org/2000/svg" 
                                                                 width="24" 
@@ -1095,7 +1156,7 @@ const Dashboard = () => {
                                                             <div class="filter-item-box">
                                                                 <div id="task-table_filter" class="dataTables_filter">
                                                                     <label>
-                                                                        <input type="search" class="form-control form-control-sm" placeholder="Search" aria-controls="task-table"/>
+                                                                        <input type="search"  className="form-control p10" placeholder="Search" aria-controls="task-table"/>
                                                                     </label>
                                                                 </div>
                                                             </div>
