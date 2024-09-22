@@ -1,17 +1,11 @@
+import React from "react";
 
-import React from 'react';
-
-
-function Footer  () {
-
+function Footer() {
   return (
     <div class="footer p15">
-        <div class="float-start">
-        Copyright © 2024 VNB-IT | Powered by VNB-IT           
-        </div>   
+      <div class="float-start">Copyright © Ampah KOMLASSAN</div>
     </div>
- );
-  
+  );
 }
 
 export default Footer;

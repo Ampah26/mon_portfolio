@@ -58,7 +58,7 @@ function Login() {
                 <div className="form-signin">
                     <div className="card bg-white mb15">
                         <div className="card-header text-center">
-                            <h2>Sign in</h2>
+                            <h2>CONNEXION</h2>
                         </div>
                         <div className="card-body p30 rounded-bottom">
                             <form id="signin-form" className="general-form" acceptCharset="utf-8" onSubmit={handleSubmit}>
@@ -85,7 +85,7 @@ function Login() {
                                         name="password"
                                         id="password"
                                         className="form-control p10"
-                                        placeholder="Password"
+                                        placeholder="Mot de passe"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
@@ -104,11 +104,12 @@ function Login() {
                             <br/>
 
                             <div className="mt5">
-                                <a href=''>Forgot password?</a>
+                                <a href=''>Mot de passe oublié?</a>
                             </div>
                             <div className="mt20">
-                                <strong>You don't have an account? &nbsp; 
-                                    <Link to="/signup">Sign up</Link> 
+                               Vous n'avez pas de compte? &nbsp; 
+                               <strong>
+                                  <Link to="/signup" >Inscription</Link> 
                                 </strong>
                             </div>
                         </div>

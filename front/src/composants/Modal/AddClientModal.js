@@ -1,50 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import Swal from "sweetalert2";
+import Select from "react-select";
+import { countries } from "countries-list";
+import { getCountryCallingCode } from "libphonenumber-js";
 
 const AddClientModal = ({ show, handleClose }) => {
+  const countryOptions = Object.keys(countries).map((code) => ({
+    value: code,
+    label: countries[code].name,
+  }));
+
+  const handleCountryChange = (selectedOption) => {
+    setClientData((prevData) => ({
+      ...prevData,
+      country: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
   const [clientData, setClientData] = useState({
-    type: 'Organization',
-    name: '',
-    company_name: '',
-    primary_contact: '',
-    phone: '',
-    client_group: 'Gold',
-    labels: 'Corporate',
-    projects: '',
-    total_invoiced: '',
-    payment_received: '',
-    due: '',
-    address: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: '',
-    website: '',
-    vat_number: '',
-    fiscal_identification: '',
-    currency: 'USD',
-    currency_symbol: '$'
+    type: "Organization",
+    name: "",
+    company_name: "",
+    primary_contact: "",
+    phone: "",
+    client_group: "Gold",
+    labels: "Corporate",
+    projects: "",
+    total_invoiced: "",
+    payment_received: "",
+    due: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    website: "",
+    vat_number: "",
+    fiscal_identification: "",
+    currency: "USD",
+    currency_symbol: "$",
   });
 
   const [isOrganization, setIsOrganization] = useState(true);
 
   const currencies = [
-    { code: 'USD', name: 'US Dollar', symbol: '$' },
-    { code: 'EUR', name: 'Euro', symbol: '€' },
-    { code: 'GBP', name: 'British Pound', symbol: '£' },
-    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
-    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
-    { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
-    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
-    { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
-    { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
-    { code: 'ZAR', name: 'South African Rand', symbol: 'R' },
+    { code: "USD", name: "US Dollar", symbol: "$" },
+    //{ code: 'EUR', name: 'Euro', symbol: '€' },
   ];
 
   useEffect(() => {
-    if (clientData.type === 'Organization') {
+    if (clientData.type === "Organization") {
       setIsOrganization(true);
     } else {
       setIsOrganization(false);
@@ -53,68 +59,82 @@ const AddClientModal = ({ show, handleClose }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'currency') {
-      const selectedCurrency = currencies.find(currency => currency.code === value);
-      setClientData({
-        ...clientData,
+
+    if (name === "currency") {
+      const selectedCurrency = currencies.find(
+        (currency) => currency.code === value
+      );
+      setClientData((prevData) => ({
+        ...prevData,
         [name]: value,
-        currency_symbol: selectedCurrency ? selectedCurrency.symbol : ''
-      });
+        currency_symbol: selectedCurrency ? selectedCurrency.symbol : "",
+      }));
     } else {
-      setClientData({
-        ...clientData,
-        [name]: value
+      setClientData((prevData) => {
+        const updatedData = { ...prevData, [name]: value };
+
+        // Calculer le montant restant si "total_invoiced" ou "payment_received" change
+        if (name === "total_invoiced" || name === "payment_received") {
+          const totalInvoiced = parseFloat(updatedData.total_invoiced) || 0;
+          const paymentReceived = parseFloat(updatedData.payment_received) || 0;
+          const due = totalInvoiced - paymentReceived;
+
+          // Mettre à jour le champ "due"
+          updatedData.due = due.toFixed(2);
+        }
+
+        return updatedData;
       });
     }
   };
 
   const handleTypeChange = (e) => {
     const { value } = e.target;
-    setClientData(prevData => ({
+    setClientData((prevData) => ({
       ...prevData,
-      type: value
+      type: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Formulaire soumis avec les données:', clientData);
+    console.log("Formulaire soumis avec les données:", clientData);
 
     try {
-      const response = await fetch('http://localhost:5000/api/clients', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/clients", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(clientData),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Client ajouté avec succès:', data);
+        console.log("Client ajouté avec succès:", data);
         Swal.fire({
-          title: 'Succès',
-          text: 'Nouveau client ajouté avec succès !',
-          icon: 'success',
-          confirmButtonText: 'OK'
+          title: "Succès",
+          text: "Nouveau client ajouté avec succès !",
+          icon: "success",
+          confirmButtonText: "OK",
         });
         handleClose(); // Fermer le modal après soumission
       } else {
-        console.error('Erreur lors de l\'ajout du client');
+        console.error("Erreur lors de l'ajout du client");
         Swal.fire({
-          title: 'Erreur',
-          text: 'Erreur lors de l\'ajout du client',
-          icon: 'error',
-          confirmButtonText: 'OK'
+          title: "Erreur",
+          text: "Erreur lors de l'ajout du client",
+          icon: "error",
+          confirmButtonText: "OK",
         });
       }
     } catch (error) {
-      console.error('Erreur lors de la soumission du formulaire:', error);
+      console.error("Erreur lors de la soumission du formulaire:", error);
       Swal.fire({
-        title: 'Erreur',
-        text: 'Erreur lors de la soumission du formulaire',
-        icon: 'error',
-        confirmButtonText: 'OK'
+        title: "Erreur",
+        text: "Erreur lors de la soumission du formulaire",
+        icon: "error",
+        confirmButtonText: "OK",
       });
     }
   };
@@ -125,12 +145,21 @@ const AddClientModal = ({ show, handleClose }) => {
         <Modal.Title>Ajouter un Client</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form id="add-client-form" className="general-form" acceptCharset="utf-8" onSubmit={handleSubmit}>
-          <input type='hidden' name="rise_csrf_token" value="bde860d90acd92894b2c7975d0839a63" />
+        <form
+          id="add-client-form"
+          className="general-form"
+          acceptCharset="utf-8"
+          onSubmit={handleSubmit}
+        >
+          <input
+            type="hidden"
+            name="rise_csrf_token"
+            value="bde860d90acd92894b2c7975d0839a63"
+          />
 
           {/* Type de Client */}
           <div className="form-group d-flex">
-            <Form.Check 
+            <Form.Check
               type="radio"
               label="Organization"
               name="type"
@@ -139,7 +168,7 @@ const AddClientModal = ({ show, handleClose }) => {
               onChange={handleTypeChange}
               className="me-3" // Add margin end
             />
-            <Form.Check 
+            <Form.Check
               type="radio"
               label="Individual"
               name="type"
@@ -176,18 +205,27 @@ const AddClientModal = ({ show, handleClose }) => {
             </div>
           )}
 
-          {/* Contact Principal */}
           <div className="form-group">
-            <input
-              type="text"
-              name="primary_contact"
-              id="primary_contact"
-              className="form-control p10"
-              placeholder="Primary Contact"
-              value={clientData.primary_contact}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="country">Pays</label>
+            <div className="select-container">
+              <select
+                name="country"
+                id="country"
+                className="form-control p10"
+                value={clientData.country}
+                onChange={handleChange}
+              >
+                {/* Option placeholder */}
+                <option value="" disabled selected>
+                  Sélectionnez un pays
+                </option>
+                {countryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Téléphone */}
@@ -206,6 +244,7 @@ const AddClientModal = ({ show, handleClose }) => {
 
           {/* Groupe de Client */}
           <div className="form-group">
+            Catégorie Client
             <select
               name="client_group"
               id="client_group"
@@ -221,6 +260,7 @@ const AddClientModal = ({ show, handleClose }) => {
 
           {/* Labels */}
           <div className="form-group">
+            Etiquette
             <select
               name="labels"
               id="labels"
@@ -228,17 +268,17 @@ const AddClientModal = ({ show, handleClose }) => {
               value={clientData.labels}
               onChange={handleChange}
             >
-              <option value="Corporate">Corporate</option>
+              <option value="Satisfied">Satisfied</option>
               <option value="Referral">Referral</option>
-              <option value="Potential">Potential</option>
+              <option value="Unsatisfied">Unsatisfied</option>
               <option value="Inactive">Inactive</option>
             </select>
           </div>
 
-          {/* Autres champs */}
           <div className="form-group">
+            <label> Nombre de projet</label>
             <input
-              type="text"
+              type="number"
               name="projects"
               id="projects"
               className="form-control p10"
@@ -249,6 +289,7 @@ const AddClientModal = ({ show, handleClose }) => {
           </div>
 
           <div className="form-group">
+            <label>Facture Total</label>
             <input
               type="number"
               name="total_invoiced"
@@ -261,6 +302,7 @@ const AddClientModal = ({ show, handleClose }) => {
           </div>
 
           <div className="form-group">
+            <label>Payement reçu</label>
             <input
               type="number"
               name="payment_received"
@@ -273,6 +315,7 @@ const AddClientModal = ({ show, handleClose }) => {
           </div>
 
           <div className="form-group">
+            Montant restant
             <input
               type="number"
               name="due"
@@ -285,6 +328,7 @@ const AddClientModal = ({ show, handleClose }) => {
           </div>
 
           <div className="form-group">
+            <label> Adresse </label>
             <input
               type="text"
               name="address"
@@ -297,6 +341,7 @@ const AddClientModal = ({ show, handleClose }) => {
           </div>
 
           <div className="form-group">
+            <label>Ville</label>
             <input
               type="text"
               name="city"
@@ -328,18 +373,6 @@ const AddClientModal = ({ show, handleClose }) => {
               className="form-control p10"
               placeholder="Zip"
               value={clientData.zip}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <input
-              type="text"
-              name="country"
-              id="country"
-              className="form-control p10"
-              placeholder="Country"
-              value={clientData.country}
               onChange={handleChange}
             />
           </div>
@@ -411,7 +444,11 @@ const AddClientModal = ({ show, handleClose }) => {
 
           {/* Boutons */}
           <div className="form-group d-flex justify-content-between">
-            <button type="button" className="btn btn-secondary" onClick={handleClose}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleClose}
+            >
               Annuler
             </button>
             <button type="submit" className="btn btn-primary ms-auto">
