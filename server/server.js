@@ -59,7 +59,7 @@ app.get("/api/utilisateur", async (req, res) => {
 
 app.get("/api/clients", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM client"); // Remplacez par votre table de clients
+    const result = await pool.query("SELECT * FROM client");
     res.json(result.rows);
   } catch (error) {
     console.error("Erreur lors de la récupération des clients:", error.message);
@@ -135,7 +135,7 @@ app.delete("/api/clients/delete/:id", async (req, res) => {
 
 app.get("/api/projects", async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, name FROM projects"); // Sélectionne uniquement l'id et le nom des projets
+    const result = await pool.query("SELECT id, name FROM projects");
     res.json(result.rows);
   } catch (error) {
     console.error("Erreur lors de la récupération des projets:", error.message);
@@ -200,11 +200,10 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Ajouter une route pour obtenir les tâches par statut
 app.get("/api/tasks", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM tasks");
-    console.log(result.rows); // Affiche les données récupérées
+    console.log(result.rows);
     res.json(result.rows);
   } catch (error) {
     console.error("Erreur lors de la récupération des tâches:", error);
@@ -229,7 +228,6 @@ app.post("/api/tasks", async (req, res) => {
   } = req.body;
 
   try {
-    // Remplace les chaînes vides par null si nécessaire
     const assignedToValue = assigned_to ? parseInt(assigned_to) : null;
     const collaboratorValue = collaborator ? parseInt(collaborator) : null;
     const projectIdValue = project_id ? parseInt(project_id) : null;
@@ -262,7 +260,6 @@ app.post("/api/tasks", async (req, res) => {
 
 app.get("/api/dashboard-totals", async (req, res) => {
   try {
-    // Exécute plusieurs requêtes SQL en parallèle
     const [
       totalTasksResult,
       totalClientsResult,
@@ -275,13 +272,11 @@ app.get("/api/dashboard-totals", async (req, res) => {
       pool.query("SELECT COUNT(*) AS total_projects FROM projects"),
     ]);
 
-    // Récupère les résultats de chaque requête
     const totalTasks = totalTasksResult.rows[0].total_tasks;
     const totalClients = totalClientsResult.rows[0].total_clients;
     const totalDue = totalDueResult.rows[0].total_due;
     const totalProjet = totalProjectResult.rows[0].total_projects;
 
-    // Renvoie une réponse JSON avec tous les totaux
     res.json({
       totalTasks,
       totalClients,
@@ -299,7 +294,6 @@ app.get("/api/dashboard-totals", async (req, res) => {
   }
 });
 
-// Route pour obtenir l'historique des changements
 app.get("/api/history", async (req, res) => {
   try {
     const result = await pool.query(

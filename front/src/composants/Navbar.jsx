@@ -1,6 +1,5 @@
 import React from "react";
 import Login from "./Login";
-import { loginUser } from "./Admin/authService";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
