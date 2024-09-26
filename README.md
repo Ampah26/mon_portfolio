@@ -6,4 +6,4 @@ Portfolio de management de projet qui comprend 4 modules:
 
     -Gestion des Projets : Les projets sont associés à des clients et incluent des informations telles que le nom du projet, la description, les dates de début et de fin, le budget, et le statut. Les projets sont également liés à des utilisateurs, avec la possibilité de désigner un utilisateur responsable du projet.
 
-    -Gestion des Tâches : Les tâches sont créées pour chaque projet et incluent des détails comme le titre, la description, la priorité, les points, et les dates importantes. Les tâches sont attribuées à des utilisateurs et peuvent également impliquer des collaborateurs supplémentaires.
+    -Gestion des Tâches : Les tâches sont créées pour chaque projet et incluent des détails comme le titre, la description, la priorité, et les dates importantes. Les tâches sont attribuées à des utilisateurs et peuvent également impliquer des collaborateurs supplémentaires.
