@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/portfolio/static/css/main.a4ae846d.css",
+    "main.js": "/portfolio/static/js/main.c014a541.js",
+    "static/js/453.c2b2afdb.chunk.js": "/portfolio/static/js/453.c2b2afdb.chunk.js",
+    "static/media/gestion-projet-erreurs-communes.jpg": "/portfolio/static/media/gestion-projet-erreurs-communes.0f9ce0f4a9b96d3b6821.jpg",
+    "index.html": "/portfolio/index.html",
+    "main.a4ae846d.css.map": "/portfolio/static/css/main.a4ae846d.css.map",
+    "main.c014a541.js.map": "/portfolio/static/js/main.c014a541.js.map",
+    "453.c2b2afdb.chunk.js.map": "/portfolio/static/js/453.c2b2afdb.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a4ae846d.css",
+    "static/js/main.c014a541.js"
+  ]
+}
