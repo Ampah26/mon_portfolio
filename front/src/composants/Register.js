@@ -19,7 +19,7 @@ function Register() {
   const [acceptCGU, setAcceptCGU] = useState(false); // State to manage CGU acceptance
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,

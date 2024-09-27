@@ -1,34 +1,17 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "./Navbar";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isSalesExpanded, setIsSalesExpanded] = useState(false);
-  const [isProspectsExpanded, setIsProspectsExpanded] = useState(false);
-  const location = useLocation(); // React Router hook to access the current location
+  const location = useLocation();
   const [activeItem, setActiveItem] = useState("");
 
   useEffect(() => {
-    // Set the active item based on the current location path
-    const currentPath = location.pathname.split("/")[1]; // Get the first segment of the path
+    const currentPath = location.pathname.split("/")[1];
     setActiveItem(currentPath);
   }, [location]);
 
   const handleClick = (item) => {
     setActiveItem(item);
-  };
-
-  const toggleSalesMenu = () => {
-    setIsSalesExpanded(!isSalesExpanded);
-  };
-
-  const toggleProspectsMenu = () => {
-    setIsProspectsExpanded(!isProspectsExpanded);
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
   return (

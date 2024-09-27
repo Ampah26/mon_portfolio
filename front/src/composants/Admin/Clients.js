@@ -8,7 +8,6 @@ import AddClientModal from "../Modal/AddClientModal";
 import withReactContent from "sweetalert2-react-content";
 import DeleteClientButton from "../Modal/DeleteClientButton";
 import Swal from "sweetalert2";
-import html2canvas from "html2canvas";
 import { handleDelete } from "../Modal/DeleteClientButton";
 
 const MySwal = withReactContent(Swal);
@@ -20,13 +19,11 @@ const Clients = ({ client }) => {
   const handleCloseModal = () => setShowModal(false);
   const [clients, setClients] = useState([]);
 
-  // Fonction d'impression
-
   useEffect(() => {
     // Fonction pour récupérer les données des clients depuis le backend
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/clients"); // Assurez-vous que l'URL correspond à votre route backend
+        const response = await fetch("http://localhost:5000/api/clients");
         const data = await response.json();
         setClients(data);
       } catch (error) {
@@ -70,7 +67,6 @@ const Clients = ({ client }) => {
           `http://localhost:5000/api/clients/delete/${client.id}`
         );
         MySwal.fire("Supprimé !", "Le client a été supprimé.", "success");
-        // Si nécessaire, rafraîchissez la liste des clients après suppression
       } catch (error) {
         MySwal.fire(
           "Erreur !",
@@ -242,7 +238,6 @@ const Clients = ({ client }) => {
                                   </div>
                                 </div>
 
-                                {/* Bookmarked filters */}
                                 <div className="filter-item-box bookmarked-filter-button-wrapper">
                                   <button
                                     className="btn btn-default bookmarked-filter-button round"
@@ -252,7 +247,6 @@ const Clients = ({ client }) => {
                                     Has due
                                   </button>
                                 </div>
-                                {/* Add more bookmarked filters as needed */}
                               </div>
                               <div className="filter-section-right">
                                 <div className="filter-item-box">

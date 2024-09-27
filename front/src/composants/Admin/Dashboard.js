@@ -9,7 +9,7 @@ const Dashboard = () => {
   const [totalClients, setTotalClients] = useState(0);
   const [totalDue, setTotalDue] = useState(0);
   const [totalProjet, setTotalProjet] = useState(0);
-  const [modifications, setModifications] = useState([]); // Renommer history
+  const [modifications, setModifications] = useState([]);
 
   const fetchTotals = async () => {
     try {
@@ -30,7 +30,7 @@ const Dashboard = () => {
     try {
       const response = await fetch("http://localhost:5000/api/history");
       const data = await response.json();
-      setModifications(data); // Utiliser "setModifications" au lieu de "setHistory"
+      setModifications(data);
     } catch (error) {
       console.error("Erreur lors de la récupération de l'historique:", error);
     }
@@ -494,7 +494,7 @@ const Dashboard = () => {
               </div>
               <div class="dashboards-row clearfix row">
                 <ul>
-                  {modifications.length > 0 ? ( // Utiliser "modifications" à la place de "history"
+                  {modifications.length > 0 ? (
                     modifications.map((entry) => (
                       <li key={entry.id}>
                         {entry.modified_at}: {entry.operation} sur la table{" "}

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
-import Select from "react-select";
 import { countries } from "countries-list";
-import { getCountryCallingCode } from "libphonenumber-js";
 
 const AddClientModal = ({ show, handleClose }) => {
   const countryOptions = Object.keys(countries).map((code) => ({

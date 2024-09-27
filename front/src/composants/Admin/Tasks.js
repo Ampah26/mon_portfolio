@@ -2,14 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import axios from "axios";
-import { FaBeer } from "react-icons/fa"; // Import d'une icône spécifique (ici une icône de FontAwesome)
-import {
-  FaPlus,
-  FaCheckCircle,
-  FaSpinner,
-  FaClipboardCheck,
-} from "react-icons/fa"; // Import des icônes
-import { Button } from "react-bootstrap";
+
 import AddTaskModal from "../Modal/AddTaskModal";
 
 const renderTask = (task) => {
@@ -35,7 +28,7 @@ const renderTask = (task) => {
           <polyline points="5 12 12 5 19 12"></polyline>
         </svg>
       );
-      priorityColor = "#e18a00"; // Couleur pour haute priorité
+      priorityColor = "#e18a00";
       break;
     case "low":
       priorityIcon = (
@@ -55,11 +48,11 @@ const renderTask = (task) => {
           <polyline points="5 12 12 19 19 12"></polyline>
         </svg>
       );
-      priorityColor = "#aab7b7"; // Couleur pour basse priorité
+      priorityColor = "#aab7b7";
       break;
     default:
       priorityIcon = null;
-      priorityColor = "#ddd"; // Couleur par défaut pour priorité moyenne
+      priorityColor = "#ddd";
       break;
   }
 
@@ -95,16 +88,16 @@ const renderTask = (task) => {
               let labelColor;
               switch (label.trim().toLowerCase()) {
                 case "feedback":
-                  labelColor = "#0096FF"; // Bleu pour Feedback
+                  labelColor = "#0096FF";
                   break;
                 case "design":
-                  labelColor = "#28a745"; // Vert pour Design
+                  labelColor = "#28a745";
                   break;
                 case "amelioration":
-                  labelColor = "#007bff"; // Bleu pour Amélioration
+                  labelColor = "#007bff";
                   break;
                 default:
-                  labelColor = "#d3d3d3"; // Gris clair pour les autres labels
+                  labelColor = "#d3d3d3";
                   break;
               }
               return (
@@ -133,12 +126,11 @@ const renderTask = (task) => {
 
 const Tasks = () => {
   const [view, setView] = useState("kanban");
-  // État pour suivre la vue sélectionnée
   const [showModal, setShowModal] = useState(false);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
-  const [projects, setProjects] = useState([]); // État pour stocker les projets récupérés
+  const [projects, setProjects] = useState([]);
 
   const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState({
@@ -172,7 +164,6 @@ const Tasks = () => {
         const projectsData = await projectsResponse.json();
         setProjects(projectsData);
 
-        // Fetch users
         const usersResponse = await fetch("http://localhost:5000/api");
         const usersData = await usersResponse.json();
         setUsers(usersData);
@@ -283,7 +274,7 @@ const Tasks = () => {
                 </div>
               </ul>
 
-              {/* Kanban View */}
+              {/* Kanban Vue */}
               {view === "kanban" && (
                 <div id="kanban-view" className="tab-pane fade in active show">
                   <div className="bg-white">
@@ -310,7 +301,7 @@ const Tasks = () => {
                                     : status === "in progress"
                                     ? "#1672B9"
                                     : status === "review"
-                                    ? "#ad159e" // Violet pour review
+                                    ? "#ad159e"
                                     : "#00B393"
                                 }`,
                               }}
@@ -451,7 +442,6 @@ const Tasks = () => {
                               >
                                 {task.title}
                               </td>{" "}
-                              {/* Titre en bleu */}
                               <td style={{ backgroundColor: "#f4f4f4" }}>
                                 {task.status}
                               </td>
@@ -473,14 +463,12 @@ const Tasks = () => {
                                   ? new Date(task.deadline).toLocaleDateString()
                                   : ""}
                               </td>{" "}
-                              {/* Deadline en rouge */}
                               <td
                                 className="project-blue"
                                 style={{ backgroundColor: "#f4f4f4" }}
                               >
                                 {getProjectName(task.project_id)}
                               </td>{" "}
-                              {/* Projet en bleu */}
                               <td style={{ backgroundColor: "#f4f4f4" }}>
                                 {getUserName(task.assigned_to)}
                               </td>
